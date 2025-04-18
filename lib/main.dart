@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:safestepapp/main/home.dart';
 import 'package:safestepapp/map/map.dart';
-import 'package:safestepapp/user/guardian.dart';
-import 'package:safestepapp/user/patient.dart';
+import 'package:safestepapp/user/guardian/guardian.dart';
+import 'package:safestepapp/user/guardian/guardianmain.dart';
+import 'package:safestepapp/user/guardian/signup.dart';
+import 'package:safestepapp/user/patient/patient.dart';
 
 void main() async {
   // 지도 테스트용으로 runApp()
@@ -47,7 +49,9 @@ class MyApp extends StatelessWidget{
         "/" : (context) => Home(),
         "/map" : (context) => NaverMapApp(),
         "/guardian" : (context) => Guardian(),
-        "/patient" : (context) => Patient()
+        "/patient" : (context) => Patient(),
+        "/signup" : (context) => Signup(),
+        "/guardianmain" : (context) => GuardianMain()
       }
     );
   }
