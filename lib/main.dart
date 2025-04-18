@@ -12,7 +12,9 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:safestepapp/main/home.dart';
 import 'package:safestepapp/map/map.dart';
 import 'package:safestepapp/user/guardian/guardian.dart';
+import 'package:safestepapp/user/guardian/guardianinfo.dart';
 import 'package:safestepapp/user/guardian/guardianmain.dart';
+import 'package:safestepapp/user/guardian/patient/enrollpatient.dart';
 import 'package:safestepapp/user/guardian/signup.dart';
 import 'package:safestepapp/user/patient/patient.dart';
 
@@ -51,7 +53,9 @@ class MyApp extends StatelessWidget{
         "/guardian" : (context) => Guardian(),
         "/patient" : (context) => Patient(),
         "/signup" : (context) => Signup(),
-        "/guardianmain" : (context) => GuardianMain()
+        "/guardianmain" : (context) => GuardianMain(),
+        "/enrollpatient" : (context) => EnrollPatient(),
+        "/guardianinfo" : (context) => GuardianInfo()
       }
     );
   }
