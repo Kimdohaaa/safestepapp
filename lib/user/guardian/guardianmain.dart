@@ -1,7 +1,9 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:safestepapp/user/guardian/findpatient.dart';
 import 'package:safestepapp/user/guardian/guardianinfo.dart';
+import 'package:safestepapp/user/guardian/resignguardian.dart';
 
 class GuardianMain extends StatefulWidget{
   @override
@@ -17,10 +19,11 @@ class _GuardianMainState extends State<GuardianMain> {
 
   // 페이지 리스트
   final List<Widget> _pages = [
-    Text("data"),
+    Text("지도부분"),
     GuardianInfo(), // "내정보" 페이지
-    Text("환자정보"), // "환자정보" 페이지
-    Text("회원탈퇴"), // "회원탈퇴" 페이지
+    FindPatient(), // "환자정보" 페이지
+    ResignGuardian(), // "회원탈퇴" 페이지
+    Text("로그아웃") // 해당 파일에 구현할거임
   ];
 
   @override
@@ -71,7 +74,8 @@ class _GuardianMainState extends State<GuardianMain> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: '내정보'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: '환자정보'),
-          BottomNavigationBarItem(icon: Icon(Icons.logout), label: '회원탈퇴'),
+          BottomNavigationBarItem(icon: Icon(Icons.outbond), label: '회원탈퇴'),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: '로그아웃'),
         ],
       ),
     );

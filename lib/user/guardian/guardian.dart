@@ -1,7 +1,8 @@
 import 'dart:math';
-
+// 로그인 파일 //
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Guardian extends StatefulWidget{
   @override
@@ -19,8 +20,6 @@ class _GuardianState extends State<Guardian> {
   // [*] DIO
   Dio dio = Dio();
 
-  // [*] 토큰
-  String token = "";
 
   // [#] 로그인 
   void login() async{
@@ -33,13 +32,14 @@ class _GuardianState extends State<Guardian> {
       final response = await dio.post("http://192.168.40.34:8080/guardian/login", data: obj);
 
       dynamic data = response.data;
-      print("반환값 $data");
-      setState(() {
-        token = data;
-      });
+
       // 로그인 성공 조건
       if (data != "" ) {
-        Navigator.pushNamed(context, "/guardianmain", arguments: token);
+        Navigator.pushNamed(context, "/guardianmain");
+
+        // 토큰 전역변수로 저장
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("token", data);
       }else{
         print("로그인 실패");
         ScaffoldMessenger.of(context).showSnackBar(

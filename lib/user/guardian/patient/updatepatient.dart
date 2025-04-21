@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-class EnrollPatient extends StatefulWidget{
+class UpdatePatient extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _EnrollPatientState();
+    return _UpdatePatientState();
   }
 }
 
-class _EnrollPatientState extends State<EnrollPatient> {
+class _UpdatePatientState extends State<UpdatePatient>{
   // [*] TextController
   TextEditingController pnameController = TextEditingController();
   TextEditingController pnumberController = TextEditingController();
@@ -18,28 +18,76 @@ class _EnrollPatientState extends State<EnrollPatient> {
   String? selectedRelation;
   TextEditingController pphoneController = TextEditingController();
 
-  // [*] DIO
   Dio dio = Dio();
 
-  // [#] 보호자 PK 키 가져오기 (회원가입 후 이동 시 매개변수) => 나중에 로그인 후 등록 시 dio로 가져오는 코드 추가
-  int gno = 0;
+  int pno = 0;
+  bool _isInit = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // signup.dart 파일에서 받아옴
-    gno = ModalRoute.of(context)!.settings.arguments as int;
+    if (_isInit) {
+      pno = ModalRoute.of(context)!.settings.arguments as int;
+      detailPatient(); // 딱 1번만 실행
+      _isInit = false;
+    }
   }
 
-  // [#] 환자 등록
-  void enroll() async {
+  // 환자 상세 조회 함수 추가 해야함
+
+  // [#] 환자 상세 조회 함수
+  Map<String, dynamic> patientDto = {};
+  void detailPatient() async{
     try{
-      print(gno);
+      final response = await dio.get("http://192.168.40.34:8080/patient/find?pno=$pno");
+
+      print(response.data);
+      setState(() {
+        patientDto = response.data;
+        print(patientDto);
+        pnameController.text = patientDto['pname'];
+        pnumberController.text = patientDto['pnumber'];
+        pageController.text =  patientDto['page'];
+        pphoneController.text = patientDto['pphone'];
+        selectedGender = (patientDto['pgender'] == true) ? "여자" : "남자";
+        selectedGrade = getGradeText(patientDto['pgrade']);
+        selectedRelation = patientDto['relation'] as String;
+      });
+    }catch(e){
+      print(e);
+    }
+  }
+
+  // [#] 치매 등급 문자열로 출력
+  String getGradeText(dynamic pgrade) {
+    switch (pgrade) {
+      case 1:
+        return "1등급";
+      case 2:
+        return "2등급";
+      case 3:
+        return "3등급";
+      case 4:
+        return "4등급";
+      case 5:
+        return "5등급";
+      case 0:
+        return "인지지원등급";
+      default:
+        return "등급 없음";
+    }
+  }
+  // [#] 환자 정보 수정
+  void updatePatient() async{
+    print("환자정보수정시작");
+    try{
+      print("환자번호 : $pno");
       bool gender = false;
       if(selectedGender == "여자"){
         gender = true;
       }
       int grade = 0;
-      if(selectedGender == "1등급"){
+      if(selectedGrade == "1등급"){
         grade = 1;
       }else if(selectedGrade == "2등급"){
         grade = 2;
@@ -59,17 +107,16 @@ class _EnrollPatientState extends State<EnrollPatient> {
         "pgender" : gender,
         "pgrade" : grade,
         "relation" : selectedRelation,
-        "gno" : gno
+        "pno" : pno
       };
-      
-      final response = await dio.post("http://192.168.40.34:8080/patient/enroll", data: obj);
+      final response = await dio.put("http://192.168.40.34:8080/patient/update",data: obj);
 
-      if(response.data != null){
+      print("서버통신완");
+      print(response.data);
+      if(response.data == true){
         print("성공");
         print(response.data);
-        // 환자 기본 위치 지정 페이지로 넘어가야 됨
-      }else{
-        print('실패');
+        Navigator.pushNamed(context, "/guardianmain");
       }
     }catch(e){
       print(e);
@@ -116,7 +163,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
             children: [
               SizedBox(height: 10,),
               // 로그인 텍스트
-              Text("환자 등록 페이지 입니다."),
+              Text("환자 정보 수정 페이지 입니다."),
 
               SizedBox(height: 30), // 텍스트와 TextField 사이의 여백
 
@@ -154,6 +201,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
               ),
 
               SizedBox(height: 10),
+
               DropdownButtonFormField<String>(
                 value: selectedGender,
                 onChanged: (String? newValue) {
@@ -204,9 +252,9 @@ class _EnrollPatientState extends State<EnrollPatient> {
 
               DropdownButtonFormField<String>(
                 value: selectedRelation,
-                onChanged: (value) {
+                onChanged: (String? newValue) {
                   setState(() {
-                    selectedRelation = value;
+                    selectedRelation = newValue;
                   });
                 },
                 decoration: InputDecoration(
@@ -216,6 +264,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
                 items: ['자녀', '배우자', '기타'].map((relation) {
                   return DropdownMenuItem<String>(
                     value: relation,
+
                     child: Text(relation),
                   );
                 }).toList(),
@@ -225,7 +274,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
 
 
               ElevatedButton(
-                onPressed: enroll, // 버튼 클릭 시 할 작업
+                onPressed: updatePatient, // 버튼 클릭 시 할 작업
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // 버튼 색상 파란색
                   shape: RoundedRectangleBorder(
@@ -234,7 +283,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
                   minimumSize: Size(130, 50), // 버튼 크기 지정
                 ),
                 child: Text(
-                  "환자등록",
+                  "환자정보수정",
                   style: TextStyle(
                     color: Colors.white, // 버튼 텍스트 색상
                     fontSize: 16, // 텍스트 크기

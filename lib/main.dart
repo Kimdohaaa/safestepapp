@@ -11,10 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:safestepapp/main/home.dart';
 import 'package:safestepapp/map/map.dart';
+import 'package:safestepapp/user/guardian/findpatient.dart';
 import 'package:safestepapp/user/guardian/guardian.dart';
 import 'package:safestepapp/user/guardian/guardianinfo.dart';
 import 'package:safestepapp/user/guardian/guardianmain.dart';
+import 'package:safestepapp/user/guardian/patient/additionpatient.dart';
 import 'package:safestepapp/user/guardian/patient/enrollpatient.dart';
+import 'package:safestepapp/user/guardian/patient/updatepatient.dart';
+import 'package:safestepapp/user/guardian/resignguardian.dart';
 import 'package:safestepapp/user/guardian/signup.dart';
 import 'package:safestepapp/user/patient/patient.dart';
 
@@ -46,7 +50,7 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context) {
     return MaterialApp(
      // home: const NaverMapApp(),
-      initialRoute: "/",
+      initialRoute: "/", // 나중에 "/" 로 바꾸기
       routes: {
         "/" : (context) => Home(),
         "/map" : (context) => NaverMapApp(),
@@ -55,7 +59,11 @@ class MyApp extends StatelessWidget{
         "/signup" : (context) => Signup(),
         "/guardianmain" : (context) => GuardianMain(),
         "/enrollpatient" : (context) => EnrollPatient(),
-        "/guardianinfo" : (context) => GuardianInfo()
+        "/guardianinfo" : (context) => GuardianInfo(),
+        "/findpatient" : (context) => FindPatient(),
+        "/additionpatient" : (context) => AdditionPatient(),
+        "/updatepatient" : (context) => UpdatePatient(),
+        "/resignguardian" : (context) => ResignGuardian()
       }
     );
   }

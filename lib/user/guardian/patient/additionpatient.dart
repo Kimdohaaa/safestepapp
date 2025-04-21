@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-class EnrollPatient extends StatefulWidget{
+class AdditionPatient extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
-    return _EnrollPatientState();
+    return _AdditionPatientState();
   }
 }
 
-class _EnrollPatientState extends State<EnrollPatient> {
+class _AdditionPatientState extends State<AdditionPatient> {
   // [*] TextController
   TextEditingController pnameController = TextEditingController();
   TextEditingController pnumberController = TextEditingController();
@@ -28,6 +28,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
     super.didChangeDependencies();
     // signup.dart 파일에서 받아옴
     gno = ModalRoute.of(context)!.settings.arguments as int;
+    print(gno);
   }
 
   // [#] 환자 등록
@@ -61,12 +62,13 @@ class _EnrollPatientState extends State<EnrollPatient> {
         "relation" : selectedRelation,
         "gno" : gno
       };
-      
+
       final response = await dio.post("http://192.168.40.34:8080/patient/enroll", data: obj);
 
       if(response.data != null){
         print("성공");
         print(response.data);
+        Navigator.pushNamed(context, "/guardianmain");
         // 환자 기본 위치 지정 페이지로 넘어가야 됨
       }else{
         print('실패');
@@ -116,7 +118,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
             children: [
               SizedBox(height: 10,),
               // 로그인 텍스트
-              Text("환자 등록 페이지 입니다."),
+              Text("환자 추가 페이지 입니다."),
 
               SizedBox(height: 30), // 텍스트와 TextField 사이의 여백
 
