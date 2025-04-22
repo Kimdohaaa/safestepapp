@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:safestepapp/main/home.dart';
 
 class ResignGuardian extends StatefulWidget{
   @override
@@ -12,12 +13,48 @@ class _ResignGuardianState extends State<ResignGuardian>{
   TextEditingController gpwdController = TextEditingController();
 
   Dio dio = Dio();
-  
+
+  int gno = 0;
+  // [#] 현재 로그인 중인 gno 가져오기
+  void findGno() async {
+    try{
+      final response = await dio.get("http://192.168.40.34:8080/guardian/findgno");
+
+      if(response.data > 0){
+        setState(() {
+          gno = response.data;
+        });
+
+        print(gno);
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    findGno();
+  }
+
   // [#] 회원탈퇴
   // 250421 진행중 ~~ 탈퇴 시 gno 랑 gpwd 서버로 보내야함
   void deleteGuardian() async{
     try{
-      final response = await dio.delete("http://192.168.40.34:8080/guardian");    
+      String gpwd = gpwdController.text;
+      if(gno > 0) {
+        final response = await dio.delete("http://192.168.40.34:8080/guardian?gno=$gno&gpwd=$gpwd");
+
+        if(response.data == true){
+          print("회원탈퇴성공");
+          // 메인페이지로 이동 시키기
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => Home())
+          );
+        }else{
+          print("회원탈퇴 실패");
+        }
+      }
     }catch(e){
       print(e);
     }
@@ -46,7 +83,7 @@ class _ResignGuardianState extends State<ResignGuardian>{
               SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
 
               ElevatedButton(
-                onPressed: (){}, // 버튼 클릭 시 할 작업
+                onPressed: deleteGuardian, // 버튼 클릭 시 할 작업
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // 버튼 색상 파란색
                   shape: RoundedRectangleBorder(
@@ -55,7 +92,7 @@ class _ResignGuardianState extends State<ResignGuardian>{
                   minimumSize: Size(130, 50), // 버튼 크기 지정
                 ),
                 child: Text(
-                  "환자탈퇴",
+                  "회원탈퇴",
                   style: TextStyle(
                     color: Colors.white, // 버튼 텍스트 색상
                     fontSize: 16, // 텍스트 크기
