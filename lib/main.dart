@@ -13,9 +13,12 @@ import 'package:safestepapp/main/home.dart';
 import 'package:safestepapp/map/map.dart';
 import 'package:safestepapp/user/guardian/findpatient.dart';
 import 'package:safestepapp/user/guardian/guardian.dart';
+import 'package:safestepapp/user/guardian/guardianhome.dart';
 import 'package:safestepapp/user/guardian/guardianinfo.dart';
 import 'package:safestepapp/user/guardian/guardianmain.dart';
 import 'package:safestepapp/user/guardian/patient/additionpatient.dart';
+import 'package:safestepapp/user/guardian/patient/changelocation.dart';
+import 'package:safestepapp/user/guardian/patient/enrolllocation.dart';
 import 'package:safestepapp/user/guardian/patient/enrollpatient.dart';
 import 'package:safestepapp/user/guardian/patient/updatepatient.dart';
 import 'package:safestepapp/user/guardian/resignguardian.dart';
@@ -63,7 +66,10 @@ class MyApp extends StatelessWidget{
         "/findpatient" : (context) => FindPatient(),
         "/additionpatient" : (context) => AdditionPatient(),
         "/updatepatient" : (context) => UpdatePatient(),
-        "/resignguardian" : (context) => ResignGuardian()
+        "/resignguardian" : (context) => ResignGuardian(),
+        "/guardianhome" : (context) => GuardianHome(),
+        "/enrollLocation" : (context) => EnrollLocation(),
+        "/changeLocation" : (context) => ChangeLocation()
       }
     );
   }

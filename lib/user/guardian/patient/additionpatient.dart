@@ -68,8 +68,14 @@ class _AdditionPatientState extends State<AdditionPatient> {
       if(response.data != null){
         print("성공");
         print(response.data);
-        Navigator.pushNamed(context, "/guardianmain");
+
+        final patientDto = response.data;
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("환자 등록이 완료되었습니다.")),
+        // );
+
         // 환자 기본 위치 지정 페이지로 넘어가야 됨
+        Navigator.pushNamed(context, "/changeLocation", arguments: patientDto['pno'] );
       }else{
         print('실패');
       }

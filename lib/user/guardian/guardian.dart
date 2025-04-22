@@ -61,6 +61,7 @@ class _GuardianState extends State<Guardian> {
       appBar: AppBar(
         backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
         elevation: 0, // 그림자 제거
+        automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
         title: Text.rich(
           TextSpan(
             children: [

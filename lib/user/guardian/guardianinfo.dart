@@ -105,6 +105,9 @@ class _GuardianInfo extends State<GuardianInfo> {
       if(response.data == true){
         Navigator.pushNamed(context, "/guardianmain");
         print("정보수정성공");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("정보 수정이 완료되었습니다.")),
+        );
       }
     }catch(e){
       print(e);

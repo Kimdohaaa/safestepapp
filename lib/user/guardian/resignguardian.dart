@@ -47,6 +47,9 @@ class _ResignGuardianState extends State<ResignGuardian>{
 
         if(response.data == true){
           print("회원탈퇴성공");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("회원탈퇴처리 되었습니다.")),
+          );
           // 메인페이지로 이동 시키기
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => Home())

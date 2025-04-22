@@ -106,7 +106,6 @@ class _SignupState extends State<Signup> {
 
               TextField(
                 controller: gnameController,
-                obscureText: true,
                 decoration: InputDecoration(
                     labelText: '보호자 이름',
                     border: OutlineInputBorder()),
@@ -115,7 +114,6 @@ class _SignupState extends State<Signup> {
 
               TextField(
                 controller: gemailController,
-                obscureText: true,
                 decoration: InputDecoration(
                     labelText: '보호자 이메일',
                     border: OutlineInputBorder()),
@@ -124,7 +122,6 @@ class _SignupState extends State<Signup> {
 
               TextField(
                 controller: gphoneController,
-                obscureText: true,
                 decoration: InputDecoration(
                     labelText: '보호자 휴대폰번호',
                     border: OutlineInputBorder()),

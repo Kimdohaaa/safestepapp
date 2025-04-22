@@ -38,16 +38,18 @@ class _EnrollPatientState extends State<EnrollPatient> {
       if(selectedGender == "여자"){
         gender = true;
       }
-      int grade = 0;
+      int grade = 6;
       if(selectedGender == "1등급"){
-        grade = 1;
+        grade = 0;
       }else if(selectedGrade == "2등급"){
-        grade = 2;
+        grade = 1;
       }else if(selectedGrade == "3등급"){
-        grade = 3;
+        grade = 2;
       }else if(selectedGrade == "4등급"){
-        grade = 4;
+        grade = 3;
       }else if(selectedGrade == "5등급"){
+        grade = 4;
+      }else if(selectedGrade == "인지지원등급"){
         grade = 5;
       }
 
@@ -67,7 +69,10 @@ class _EnrollPatientState extends State<EnrollPatient> {
       if(response.data != null){
         print("성공");
         print(response.data);
-        // 환자 기본 위치 지정 페이지로 넘어가야 됨
+        int pno = response.data['pno'];
+        // 환자 기본 위치 지정 페이지로 이동 (등록된 환자번호 매개변수로 전달)
+        Navigator.pushNamed(context, "/enrollLocation", arguments: pno);
+
       }else{
         print('실패');
       }

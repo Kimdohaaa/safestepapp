@@ -86,16 +86,18 @@ class _UpdatePatientState extends State<UpdatePatient>{
       if(selectedGender == "여자"){
         gender = true;
       }
-      int grade = 0;
+      int grade = 5;
       if(selectedGrade == "1등급"){
-        grade = 1;
+        grade = 0;
       }else if(selectedGrade == "2등급"){
-        grade = 2;
+        grade = 1;
       }else if(selectedGrade == "3등급"){
-        grade = 3;
+        grade = 2;
       }else if(selectedGrade == "4등급"){
-        grade = 4;
+        grade = 3;
       }else if(selectedGrade == "5등급"){
+        grade = 4;
+      }else if(selectedGrade == "인지지원등급"){
         grade = 5;
       }
 
@@ -116,6 +118,9 @@ class _UpdatePatientState extends State<UpdatePatient>{
       if(response.data == true){
         print("성공");
         print(response.data);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("환자 정보 수정이 완료되었습니다.")),
+        );
         Navigator.pushNamed(context, "/guardianmain");
       }
     }catch(e){

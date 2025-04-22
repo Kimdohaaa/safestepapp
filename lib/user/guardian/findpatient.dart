@@ -8,6 +8,8 @@ class FindPatient extends StatefulWidget{
   }
 }
 
+// 나중에 환자 선택 시 해당 환자의 현재 위치를 표시하는 페이지로 이동되는 기능 추가하기
+
 class _FindPatientState extends State<FindPatient>{
   Dio dio = Dio();
 
@@ -33,7 +35,7 @@ class _FindPatientState extends State<FindPatient>{
   void initState() {
     findGno();
   }
-  // [*] 보호자가 등록한 환자 리스트 조회
+  // [#] 보호자가 등록한 환자 리스트 조회
   List<dynamic> patientsList = [];
   void findPatients(int gno) async{
     print("환자정보 조회 시작");
@@ -57,23 +59,40 @@ class _FindPatientState extends State<FindPatient>{
   // [#] 치매 등급 문자열로 출력
   String getGradeText(dynamic pgrade) {
     switch (pgrade) {
-      case 1:
-        return "1등급";
-      case 2:
-        return "2등급";
-      case 3:
-        return "3등급";
-      case 4:
-        return "4등급";
-      case 5:
-        return "5등급";
       case 0:
+        return "1등급";
+      case 1:
+        return "2등급";
+      case 2:
+        return "3등급";
+      case 3:
+        return "4등급";
+      case 4:
+        return "5등급";
+      case 5:
         return "인지지원등급";
       default:
         return "등급 없음";
     }
   }
 
+  // [#] 환자 정보 삭제
+  void deletePatient(pno) async{
+    try{
+      final response = await dio.delete("http://192.168.40.34:8080/patient?pno=$pno");
+
+      if(response.data == true){
+        print("환자정보삭제 완료");
+        setState(() {
+          findPatients(gno);
+        });
+      }else{
+        print("환자정보삭제 실패");
+      }
+    }catch(e){
+      print(e);
+    }
+  }
 
 
   @override
@@ -88,33 +107,48 @@ class _FindPatientState extends State<FindPatient>{
                 child: ListView(
                   children: // map() 사용 시 반환값이 List 이기 때문에 대괄호 생략
                   patientsList.map((patient) {
-                    return Card(child: ListTile(
+                    return Card(
+                      color: Colors.white, // 배경색 흰색
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.black, width: 1), // 1px 검은 테두리
+                        borderRadius: BorderRadius.circular(8), // 원하는 만큼 라운딩 (선택사항)
+                      ),
+                      child: ListTile(
                         title: Text("이름 : ${patient['pname']}"),
                         subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start, // 텍스트 왼쪽 정렬
                           children: [
                             Text("주민등록번호 : ${patient['pnumber']}"),
                             Text("성별 : ${patient['pgender'] == true ? '여자' : patient['pgender'] == false ? '남자' : '정보 없음'}"),
                             Text("나이 : ${patient['page']}"),
                             Text("치매등급 : ${getGradeText(patient['pgrade'])}"),
                             Text("관계 : ${patient['relation']}"),
-                            // 변수값만 출력 시 : "문자열 $변수명"
-                            // 객체의 Key의 value 출력 시 : "문자열 ${변수명['key']}"
                           ],
                         ),
-
-
-                        trailing: // trailing : ListTile 오른 쪽 끝에 표시되는 위젯
-                        Row( // Row() : 하위 위젯 가로 배치
-                            mainAxisSize : MainAxisSize.min, // trailing 하위 위젯의 사이지를 자동으로 할당
-                            children: [
-
-                              IconButton(
-                                  onPressed: () => {Navigator.pushNamed(context, "/updatepatient", arguments: patient['pno'])}, // pno 보내야됨 !!!
-                                  icon: Icon(Icons.edit)
-                              ),
-                            ]
-                        )
-                    ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, "/changeLocation", arguments: patient['pno']);
+                              },
+                              icon: Icon(Icons.location_on),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, "/updatepatient", arguments: patient['pno']);
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                deletePatient(patient['pno']);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
+                        ),
+                      ),
                     );
                   }).toList(),
 
