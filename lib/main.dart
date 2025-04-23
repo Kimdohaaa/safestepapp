@@ -23,7 +23,8 @@ import 'package:safestepapp/user/guardian/patient/enrollpatient.dart';
 import 'package:safestepapp/user/guardian/patient/updatepatient.dart';
 import 'package:safestepapp/user/guardian/resignguardian.dart';
 import 'package:safestepapp/user/guardian/signup.dart';
-import 'package:safestepapp/user/patient/patient.dart';
+import 'package:safestepapp/user/patient/authentication.dart';
+import 'package:safestepapp/user/patient/patientsetting.dart';
 
 void main() async {
   // 지도 테스트용으로 runApp()
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget{
         "/" : (context) => Home(),
         "/map" : (context) => NaverMapApp(),
         "/guardian" : (context) => Guardian(),
-        "/patient" : (context) => Patient(),
+        "/patientsetting" : (context) => PatientSetting(),
         "/signup" : (context) => Signup(),
         "/guardianmain" : (context) => GuardianMain(),
         "/enrollpatient" : (context) => EnrollPatient(),
@@ -69,7 +70,8 @@ class MyApp extends StatelessWidget{
         "/resignguardian" : (context) => ResignGuardian(),
         "/guardianhome" : (context) => GuardianHome(),
         "/enrollLocation" : (context) => EnrollLocation(),
-        "/changeLocation" : (context) => ChangeLocation()
+        "/changeLocation" : (context) => ChangeLocation(),
+        "/authentication" : (context) => Authentication()
       }
     );
   }
