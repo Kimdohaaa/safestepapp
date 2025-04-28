@@ -8,7 +8,7 @@ pluginManagement {
     }
 
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
-
+    include(":background_locator_2")
     repositories {
         google()
         mavenCentral()

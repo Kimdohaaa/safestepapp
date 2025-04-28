@@ -37,7 +37,7 @@ dependencies:
   fluttertoast: ^8.2.12
   # 백그라운드 실행 라이브러리
   # workmanager: ^0.5.1
-  # flutter_foreground_task: ^9.1.0
+  flutter_foreground_task: ^9.1.0
   # background_locator: ^1.6.12
   background_locator_2: ^2.0.6
   # 설정창으로 이동 라이브러리
@@ -46,7 +46,7 @@ dependencies:
   # permission_handler: ^12.0.0+1
   # flutter_local_notifications: ^19.1.0
 
-  location: ^8.0.0
+  #location: ^8.0.0
   flutter:
     sdk: flutter
 
