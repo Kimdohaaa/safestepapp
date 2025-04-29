@@ -40,6 +40,7 @@ class _FindPatientState extends State<FindPatient>{
   void findPatients(int gno) async{
     print("환자정보 조회 시작");
     try{
+
       final response = await dio.get("http://192.168.40.34:8080/patient/findall?gno=$gno");
 
       if(response.data != null){
@@ -79,6 +80,13 @@ class _FindPatientState extends State<FindPatient>{
   // [#] 환자 정보 삭제
   void deletePatient(pno) async{
     try{
+      // 비밀번호 확인 다이얼로그 호출
+      bool isPasswordCorrect = await _showPasswordDialog(context);
+
+      if (!isPasswordCorrect) {
+        // 비밀번호가 틀리면 삭제하지 않음
+        return;
+      }
       final response = await dio.delete("http://192.168.40.34:8080/patient?pno=$pno");
 
       if(response.data == true){
@@ -94,6 +102,46 @@ class _FindPatientState extends State<FindPatient>{
     }
   }
 
+  // 비밀번호 입력 다이얼로그 띄우기
+  Future<bool> _showPasswordDialog(BuildContext context) async {
+    TextEditingController passwordController = TextEditingController();
+
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('비밀번호 입력'),
+          content: TextField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: '비밀번호',
+              hintText: '비밀번호를 입력해주세요',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);  // 취소
+              },
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                String password = passwordController.text;
+                if (password == "정확한 비밀번호") {
+                  Navigator.of(context).pop(true);  // 비밀번호 맞으면 true 반환
+                } else {
+                  Navigator.of(context).pop(false);  // 비밀번호 틀리면 false 반환
+                }
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    ) ?? false;  // 다이얼로그가 취소되면 false 반환
+  }
 
   @override
   Widget build(BuildContext context) {

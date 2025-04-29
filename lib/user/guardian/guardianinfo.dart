@@ -102,7 +102,8 @@ class _GuardianInfo extends State<GuardianInfo> {
 
       final response = await dio.put("http://192.168.40.34:8080/guardian/update", data: obj);
       print(response.data);
-      if(response.data == true){
+      final data = response.data;
+      if(response.data == 1){
         Navigator.pushNamed(context, "/guardianmain");
         print("정보수정성공");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -163,6 +164,7 @@ class _GuardianInfo extends State<GuardianInfo> {
 
               TextField(
                 controller: gphoneController,
+                readOnly: true,
                 decoration: InputDecoration(
                     labelText: '보호자 휴대폰번호',
                     border: OutlineInputBorder()),

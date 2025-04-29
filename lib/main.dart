@@ -58,57 +58,57 @@ Future<void> _initialize() async {
   );
 
   // 지도 초기화 끝나고, 백그라운드 위치 추적 시작
-  await _initBackgroundLocator();
+//  await _initBackgroundLocator();
 }
-
-Future<void> _initBackgroundLocator() async {
-  // 위치 권한을 먼저 요청
-  geolocator.LocationPermission permission = await geolocator.Geolocator.requestPermission();
-  if (permission == geolocator.LocationPermission.denied) {
-    print("권한없음1");
-    throw Exception("위치 권한이 거부되었습니다.");
-  } else if (permission == geolocator.LocationPermission.deniedForever) {
-    print("권한없음2");
-    throw Exception("위치 권한이 영구적으로 거부되었습니다.");
-  }
-
-  // 권한이 승인되었을 때 위치 추적 시작
-  bool isRunning = await BackgroundLocator.isServiceRunning();
-  print("위치추적 서비스 실행 여부: $isRunning");
-
-  if (!isRunning) {
-    print("위치추적 서비스 시작 중");
-    try {
-      print("try 문 진입");
-      await BackgroundLocator.registerLocationUpdate(
-          LocationCallbackHandler.callback,
-          initCallback: LocationCallbackHandler.initCallback,
-
-          autoStop: false,
-          iosSettings: IOSSettings(
-              accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
-          androidSettings: locator_android.AndroidSettings(
-              accuracy: LocationAccuracy.NAVIGATION,
-              interval: 5,
-              distanceFilter: 0,
-              androidNotificationSettings: locator_android.AndroidNotificationSettings(
-                  notificationChannelName: 'Location tracking',
-                  notificationTitle: 'Start Location Tracking',
-                  notificationMsg: 'Track location in background',
-                  notificationBigMsg:
-                  'Background location is on to keep the app up-tp-date with your location. This is required for main features to work properly when the app is not running.',
-                  notificationIcon: '',
-                  notificationIconColor: Colors.grey,
-                  notificationTapCallback:
-                  LocationCallbackHandler.notificationCallback)));
-
-      print("위치추적 서비스가 정상적으로 시작되었습니다.");
-    } catch (e) {
-      print("위치추적 서비스 시작 실패: $e");
-    }
-
-  }
-}
+//
+// Future<void> _initBackgroundLocator() async {
+//   // 위치 권한을 먼저 요청
+//   geolocator.LocationPermission permission = await geolocator.Geolocator.requestPermission();
+//   if (permission == geolocator.LocationPermission.denied) {
+//     print("권한없음1");
+//     throw Exception("위치 권한이 거부되었습니다.");
+//   } else if (permission == geolocator.LocationPermission.deniedForever) {
+//     print("권한없음2");
+//     throw Exception("위치 권한이 영구적으로 거부되었습니다.");
+//   }
+//
+//   // 권한이 승인되었을 때 위치 추적 시작
+//   bool isRunning = await BackgroundLocator.isServiceRunning();
+//   print("위치추적 서비스 실행 여부: $isRunning");
+//
+//   if (!isRunning) {
+//     print("위치추적 서비스 시작 중");
+//     try {
+//       print("try 문 진입");
+//       await BackgroundLocator.registerLocationUpdate(
+//           LocationCallbackHandler.callback,
+//           initCallback: LocationCallbackHandler.initCallback,
+//
+//           autoStop: false,
+//           iosSettings: IOSSettings(
+//               accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
+//           androidSettings: locator_android.AndroidSettings(
+//               accuracy: LocationAccuracy.NAVIGATION,
+//               interval: 5,
+//               distanceFilter: 0,
+//               androidNotificationSettings: locator_android.AndroidNotificationSettings(
+//                   notificationChannelName: 'Location tracking',
+//                   notificationTitle: 'Start Location Tracking',
+//                   notificationMsg: 'Track location in background',
+//                   notificationBigMsg:
+//                   'Background location is on to keep the app up-tp-date with your location. This is required for main features to work properly when the app is not running.',
+//                   notificationIcon: '',
+//                   notificationIconColor: Colors.grey,
+//                   notificationTapCallback:
+//                   LocationCallbackHandler.notificationCallback)));
+//
+//       print("위치추적 서비스가 정상적으로 시작되었습니다.");
+//     } catch (e) {
+//       print("위치추적 서비스 시작 실패: $e");
+//     }
+//
+//   }
+// }
 
 // 라우터 클래스
 class MyApp extends StatelessWidget {

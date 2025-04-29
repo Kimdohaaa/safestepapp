@@ -61,17 +61,17 @@ class _UpdatePatientState extends State<UpdatePatient>{
   // [#] 치매 등급 문자열로 출력
   String getGradeText(dynamic pgrade) {
     switch (pgrade) {
-      case 1:
-        return "1등급";
-      case 2:
-        return "2등급";
-      case 3:
-        return "3등급";
-      case 4:
-        return "4등급";
-      case 5:
-        return "5등급";
       case 0:
+        return "1등급";
+      case 1:
+        return "2등급";
+      case 2:
+        return "3등급";
+      case 3:
+        return "4등급";
+      case 4:
+        return "5등급";
+      case 5:
         return "인지지원등급";
       default:
         return "등급 없음";
@@ -115,13 +115,30 @@ class _UpdatePatientState extends State<UpdatePatient>{
 
       print("서버통신완");
       print(response.data);
-      if(response.data == true){
+      final data = response.data;
+
+      if(response.data == 1){
         print("성공");
         print(response.data);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("환자 정보 수정이 완료되었습니다.")),
         );
         Navigator.pushNamed(context, "/guardianmain");
+      }else if(data == -1){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
+        );
+        return;
+      }else if(data == -2){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("유효한 나이를 입력하세요.")),
+        );
+        return;
+      }else if(data == -3){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
+        );
+        return;
       }
     }catch(e){
       print(e);
@@ -183,6 +200,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
 
               TextField(
                 controller: pnumberController,
+                readOnly: true,
                 decoration: InputDecoration(
                     labelText: '환자 주민등록번호',
                     border: OutlineInputBorder()),

@@ -33,6 +33,31 @@ class _EnrollPatientState extends State<EnrollPatient> {
   // [#] 환자 등록
   void enroll() async {
     try{
+
+      // 모든 정보 입력 유효성 검사
+      if (pnameController.text == '' ||
+          pnumberController.text == '' ||
+          selectedGrade == null || selectedGrade == '' ||
+          selectedGender == null || selectedGender == '' ||
+          pphoneController.text == '' ||
+          selectedRelation == null || selectedRelation == '' ||
+          pageController.text == '') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("모든 항목을 입력하세요")),
+        );
+        return;
+      }
+
+      // 환자 나이 유효성 검사
+      int? age = int.tryParse(pageController.text);
+
+      if (age == null || age < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("나이는 숫자로 입력하고 0 이상이어야 합니다")),
+        );
+        return;
+      }
+
       print(gno);
       bool gender = false;
       if(selectedGender == "여자"){
@@ -66,16 +91,45 @@ class _EnrollPatientState extends State<EnrollPatient> {
       
       final response = await dio.post("http://192.168.40.34:8080/patient/enroll", data: obj);
 
-      if(response.data != null){
+      final data = response.data;
+      if(response.data > 0){
         print("성공");
         print(response.data);
-        int pno = response.data['pno'];
         // 환자 기본 위치 지정 페이지로 이동 (등록된 환자번호 매개변수로 전달)
-        Navigator.pushNamed(context, "/enrollLocation", arguments: pno);
+        Navigator.pushNamed(context, "/enrollLocation", arguments: data);
 
-      }else{
-        print('실패');
+      }else if(data == -1){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 존재하는 주민등록번호입니다.")),
+        );
+        return;
+      }else if(data == -2){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("유효한 나이를 입력하세요.")),
+        );
+        return;
+      }else if(data == -3){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
+        );
+        return;
+      }else if(data == -4){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
+        );
+        return;
+      }else if(data == -5){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("유효한 주민등록번호 형식을 입력하세요.")),
+        );
+        return;
+      }else if(data == 0){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("관리자에게 문의하세요.")),
+        );
+        return;
       }
+
     }catch(e){
       print(e);
     }
@@ -138,6 +192,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
                 controller: pnumberController,
                 decoration: InputDecoration(
                     labelText: '환자 주민등록번호',
+                    hintText: "- 없이 13자리 입력",
                     border: OutlineInputBorder()),
               ),
               SizedBox(height: 10),
@@ -146,6 +201,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
                 controller: pageController,
                 decoration: InputDecoration(
                     labelText: '환자 나이',
+                    hintText: "0 이상의 숫자만 입력",
                     border: OutlineInputBorder()),
               ),
 
@@ -155,6 +211,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
                 controller: pphoneController,
                 decoration: InputDecoration(
                     labelText: '환자 전화번호',
+                    hintText: '- 없이 11 자리 입력',
                     border: OutlineInputBorder()),
               ),
 

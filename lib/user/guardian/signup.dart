@@ -21,6 +21,18 @@ class _SignupState extends State<Signup> {
   // [#] 회원가입
   void signup() async{
     try{
+
+      if (gidController.text == '' ||
+          gpwdController.text == '' ||
+          gnameController.text == '' ||
+          gemailController.text == '' ||
+          gphoneController.text == '') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("모든 항목을 입력하세요")),
+        );
+        return;
+      }
+
       final obj = {
         "gid" : gidController.text,
         "gpwd" : gpwdController.text,
@@ -31,12 +43,42 @@ class _SignupState extends State<Signup> {
       
       final response = await dio.post("http://192.168.40.34:8080/guardian/signup", data: obj);
 
+      final data = response.data;
       if(response.data > 0){
         print(response.data);
         Navigator.pushNamed(context, "/enrollpatient", arguments: response.data);
-      }else{
-
+      }else if(data == -1){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 존재하는 아이디입니다.")),
+        );
+        return;
+      }else if(data == -2){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 존재하는 이메일입니다.")),
+        );
+        return;
+      }else if(data == -3){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
+        );
+        return;
+      }else if(data == -4){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
+        );
+        return;
+      }else if(data == -5){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("아이디와 비밀번호의 길이는 3 ~ 15 이내입니다.")),
+        );
+        return;
+      }else if(data == 0){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("관리자에게 문의하세요.")),
+        );
+        return;
       }
+
     }catch(e){
       print(e);
     }
@@ -90,6 +132,7 @@ class _SignupState extends State<Signup> {
                 controller: gidController,
                 decoration:  InputDecoration(
                     labelText: '보호자 아이디',
+                    hintText: '3 ~ 13자 이내',
                     border: OutlineInputBorder()),
               ),
 
@@ -100,6 +143,7 @@ class _SignupState extends State<Signup> {
                 obscureText: true,
                 decoration: InputDecoration(
                     labelText: '보호자 비밀번호',
+                    hintText: '3 ~ 13자 이내',
                     border: OutlineInputBorder()),
               ),
               SizedBox(height: 10),
@@ -124,6 +168,7 @@ class _SignupState extends State<Signup> {
                 controller: gphoneController,
                 decoration: InputDecoration(
                     labelText: '보호자 휴대폰번호',
+                    hintText: '- 없이 11 자리 입력',
                     border: OutlineInputBorder()),
               ),
               SizedBox(height: 10),
