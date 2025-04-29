@@ -46,6 +46,7 @@ void main() async {
 
   // 실제 사용할 메인 위젯
   runApp(const MyApp());
+
 }
 
 // 지도 초기화하기
@@ -78,17 +79,36 @@ Future<void> _initBackgroundLocator() async {
   if (!isRunning) {
     print("위치추적 서비스 시작 중");
     try {
-      print("위치추적 try 문 진입");
+      print("try 문 진입");
       await BackgroundLocator.registerLocationUpdate(
-        ( locationDto ) { print(locationDto); } ,
-      );
+          LocationCallbackHandler.callback,
+          initCallback: LocationCallbackHandler.initCallback,
+
+          autoStop: false,
+          iosSettings: IOSSettings(
+              accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
+          androidSettings: locator_android.AndroidSettings(
+              accuracy: LocationAccuracy.NAVIGATION,
+              interval: 5,
+              distanceFilter: 0,
+              androidNotificationSettings: locator_android.AndroidNotificationSettings(
+                  notificationChannelName: 'Location tracking',
+                  notificationTitle: 'Start Location Tracking',
+                  notificationMsg: 'Track location in background',
+                  notificationBigMsg:
+                  'Background location is on to keep the app up-tp-date with your location. This is required for main features to work properly when the app is not running.',
+                  notificationIcon: '',
+                  notificationIconColor: Colors.grey,
+                  notificationTapCallback:
+                  LocationCallbackHandler.notificationCallback)));
+
       print("위치추적 서비스가 정상적으로 시작되었습니다.");
     } catch (e) {
       print("위치추적 서비스 시작 실패: $e");
     }
+
   }
 }
-
 
 // 라우터 클래스
 class MyApp extends StatelessWidget {

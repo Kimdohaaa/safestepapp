@@ -1,12 +1,25 @@
-// location_callback_handler.dart
+import 'dart:developer';
+
 import 'package:background_locator_2/location_dto.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart'; // @pragma 사용을 위해 import
 
-class LocationCallbackHandler{
+class LocationCallbackHandler {
 
-  static Future<void> callback(LocationDto locationDto) async {
-    print( locationDto );
-    print(">> 백그라운드 콜백 함수 실행됨");
+  @pragma('vm:entry-point')
+  static void callback(LocationDto locationDto) async {
+    print("callback 실행");
+
+    log("callback 실행: ${locationDto.latitude}, ${locationDto.longitude}");
+  }
+
+//Optional
+  @pragma('vm:entry-point')
+  static void initCallback(dynamic _) {
+    print('Plugin initialization');
+  }
+
+//Optional
+  @pragma('vm:entry-point')
+  static void notificationCallback() {
+    print('User clicked on the notification');
   }
 }
