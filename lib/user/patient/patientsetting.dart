@@ -38,11 +38,26 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
   }
 
   Future<void> _checkPermission() async {
+    // 권한 상태 확인
     LocationPermission permission = await Geolocator.checkPermission();
+
+    // 권한이 없으면 권한 요청
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    // 권한 상태를 SharedPreferences에 저장
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isGranted', permission == LocationPermission.always || permission == LocationPermission.whileInUse);
+
+    // 상태 업데이트
     setState(() {
-      _isGranted = permission == LocationPermission.always ||
-          permission == LocationPermission.whileInUse;
+      _isGranted = permission == LocationPermission.always || permission == LocationPermission.whileInUse;
     });
+
+    // 권한 상태 확인 (디버깅용)
+    print(">> 현재권한: $permission");
+    print(">> 전역변수에 저장도니 현재 권한 : $_isGranted");
   }
 
   // 위치 권한 버튼 클릭 시 (나중에 확인해)
@@ -56,12 +71,12 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
       _isGranted = newGranted;
     });
     if (!_isGranted) {
-      // 허용 상태: 설정으로 이동
-      AppSettings.openAppSettings(); // void 함수이므로 bool 반환 없음
+      // 위치 권한 미허용 상태: 설정으로 이동
+      AppSettings.openAppSettings();
     } else {
-      // 미허용 상태: 권한 요청
+      // 위치 권한 허용 상태: 권한 요청
       await Geolocator.requestPermission();
-      await _checkPermission(); // 최신 상태 반영
+      await _checkPermission(); // 최신 권한 상태를 반영
     }
   }
 

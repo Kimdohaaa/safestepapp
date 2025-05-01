@@ -1,16 +1,24 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.safestepapp"
-    compileSdk = flutter.compileSdkVersion
-    // ndkVersion = flutter.ndkVersion
+    compileSdk = 35  // 또는 flutter.compileSdkVersion
+
     ndkVersion = "27.0.12077973"
 
+    defaultConfig {
+        applicationId = "com.example.safestepapp"
+        minSdk = 24
+        targetSdk = 35  // 또는 flutter.targetSdkVersion
+        versionCode = 1
+        versionName = "1.0"
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -18,31 +26,27 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.safestepapp"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-
-        // minSdk = flutter.minSdkVersion
-        minSdk = 24
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        jvmTarget = "11"
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+//           shrinkResources = true
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+// 버전 정보는 gradle.properties에서 불러오기
+val appCompatVersion: String by project
+val playServicesLocationVersion: String by project
+
+dependencies {
+    implementation("androidx.appcompat:appcompat:$appCompatVersion")
+    implementation("com.google.android.gms:play-services-location:$playServicesLocationVersion")
 }

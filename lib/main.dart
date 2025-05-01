@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:background_locator_2/background_locator.dart';
-import 'package:background_locator_2/settings/ios_settings.dart';
-import 'package:background_locator_2/settings/android_settings.dart' as locator_android; // Alias for background_locator_2's AndroidSettings
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart' as geolocator; // Alias for geolocator
 import 'package:geolocator_android/geolocator_android.dart' as geolocator_android; // Alias for geolocator_android's AndroidSettings
+
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
 
 import 'package:safestepapp/main/home.dart';
 import 'package:safestepapp/map/locatioincallbackhandler.dart';
@@ -33,17 +32,13 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:background_locator_2/background_locator.dart';
-import 'package:background_locator_2/location_dto.dart';
-import 'package:background_locator_2/settings/android_settings.dart' as locator_android; // Alias for background_locator_2's AndroidSettings
-import 'package:background_locator_2/settings/ios_settings.dart';
-import 'package:background_locator_2/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   // 지도 테스트용으로 runApp()
   await _initialize();
 
+  await LocationTrackingService().start();
   // 실제 사용할 메인 위젯
   runApp(const MyApp());
 
@@ -53,65 +48,123 @@ void main() async {
 Future<void> _initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NaverMapSdk.instance.initialize(
-      clientId: '0i2o3ztm19',     // 클라이언트 ID 설정
+      clientId: '0i2o3ztm19', // 클라이언트 ID 설정
       onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed")
   );
-
-  // 지도 초기화 끝나고, 백그라운드 위치 추적 시작
-//  await _initBackgroundLocator();
 }
-//
-// Future<void> _initBackgroundLocator() async {
-//   // 위치 권한을 먼저 요청
-//   geolocator.LocationPermission permission = await geolocator.Geolocator.requestPermission();
-//   if (permission == geolocator.LocationPermission.denied) {
-//     print("권한없음1");
-//     throw Exception("위치 권한이 거부되었습니다.");
-//   } else if (permission == geolocator.LocationPermission.deniedForever) {
-//     print("권한없음2");
-//     throw Exception("위치 권한이 영구적으로 거부되었습니다.");
-//   }
-//
-//   // 권한이 승인되었을 때 위치 추적 시작
-//   bool isRunning = await BackgroundLocator.isServiceRunning();
-//   print("위치추적 서비스 실행 여부: $isRunning");
-//
-//   if (!isRunning) {
-//     print("위치추적 서비스 시작 중");
-//     try {
-//       print("try 문 진입");
-//       await BackgroundLocator.registerLocationUpdate(
-//           LocationCallbackHandler.callback,
-//           initCallback: LocationCallbackHandler.initCallback,
-//
-//           autoStop: false,
-//           iosSettings: IOSSettings(
-//               accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
-//           androidSettings: locator_android.AndroidSettings(
-//               accuracy: LocationAccuracy.NAVIGATION,
-//               interval: 5,
-//               distanceFilter: 0,
-//               androidNotificationSettings: locator_android.AndroidNotificationSettings(
-//                   notificationChannelName: 'Location tracking',
-//                   notificationTitle: 'Start Location Tracking',
-//                   notificationMsg: 'Track location in background',
-//                   notificationBigMsg:
-//                   'Background location is on to keep the app up-tp-date with your location. This is required for main features to work properly when the app is not running.',
-//                   notificationIcon: '',
-//                   notificationIconColor: Colors.grey,
-//                   notificationTapCallback:
-//                   LocationCallbackHandler.notificationCallback)));
-//
-//       print("위치추적 서비스가 정상적으로 시작되었습니다.");
-//     } catch (e) {
-//       print("위치추적 서비스 시작 실패: $e");
-//     }
-//
-//   }
-// }
+
+// 위치 추적 서비스 클래스
+class LocationTrackingService {
+  final Dio dio = Dio();
+  double? plon;
+  double? plat;
+
+  List<dynamic> routeList = [];
+
+  // 위치 추적 시작
+  Future<void> start() async {
+
+
+    // 위치 수신 이벤트 처리
+    bg.BackgroundGeolocation.onLocation((bg.Location location) async {
+
+      final prefs = await SharedPreferences.getInstance();
+      final pno = prefs.getString("pno");
+      final isGranted = prefs.getBool("isGranted");
+      final findState = prefs.getBool('findState');
+      print("1. 위치조회 권환 확인 환자번호 : $pno 권한상태 : $isGranted 와 $findState");
+
+      plat = location.coords.latitude;
+      plon = location.coords.longitude;
+      print('[location] - 위도: $plat, 경도: $plon');
+
+      try {
+        if(pno != null && pno != '' && isGranted == true && findState == true){
+          final obj = {
+            "plon" : plon,
+            "plat" : plat,
+            "pno" : pno
+          };
+          final response = await dio.post("http://192.168.40.34:8080/location/save",data: obj);
+
+          print("안전위치확인 ${response.data}");
+          if(response.data == false){
+            final findRoute = await dio.get("http://192.168.40.34:8080/location/findroute?pno=$pno");
+
+            if(findRoute.data != null){
+              routeList = findRoute.data;
+              print(routeList);
+            }
+          }
+        }
+        // 위치 정보를 서버로 전송
+        // final response = await dio.post(
+        //   "http://192.168.0.100:8080/location",  // 여기에 실제 서버 주소 입력
+        //   data: {"lat": plat, "lon": plon},
+        //   options: Options(connectTimeout: const Duration(seconds: 5)),
+        // );
+
+        // 서버 응답 처리 (서버 응답 false일 때 이동경로 요청)
+        // if (response.data == false) {
+        //   final pathResponse = await dio.get(
+        //     "http://192.168.0.100:8080/location/path", // 이동경로 API 엔드포인트
+        //     queryParameters: {"patientId": 1}, // 필요 시 수정
+        //   );
+        //   print("[이동경로 응답] - ${pathResponse.data}");
+        // }
+      } catch (e) {
+        print("[에러] 위치 전송 실패: $e");
+      }
+    });
+
+    // 상태 변경 시
+    bg.BackgroundGeolocation.onMotionChange((bg.Location location) {
+      print('[motionchange] - $location');
+    });
+
+    // 위치 서비스 상태 변경 시
+    bg.BackgroundGeolocation.onProviderChange((bg.ProviderChangeEvent event) {
+      print('[providerchange] - $event');
+    });
+
+    // 설정
+    await bg.BackgroundGeolocation.ready(bg.Config(
+      desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+      distanceFilter: 10.0,
+      stopOnTerminate: false,
+      startOnBoot: true,
+      debug: true,
+      logLevel: bg.Config.LOG_LEVEL_VERBOSE,
+      heartbeatInterval: 60, // 10분마다 heartbeat
+    ));
+
+    // 위치 추적 시작
+    await bg.BackgroundGeolocation.start();
+
+    // Heartbeat 이벤트 (10분마다 강제 실행하도록 시간 설정하기)
+    bg.BackgroundGeolocation.onHeartbeat((bg.HeartbeatEvent event){
+      bg.BackgroundGeolocation.getCurrentPosition().then((bg.Location location) async {
+        plat = location.coords.latitude;
+        plon = location.coords.longitude;
+
+        final prefs = await SharedPreferences.getInstance();
+        final pno = prefs.getString("pno");
+        final isGranted = prefs.getBool("isGranted");
+        final findState = prefs.getBool('findState');
+        print("2. 위치조회 권환 확인 환자번호 : $pno 권한상태 : $isGranted 와 $findState");
+
+        print('[Heartbeat 위치조회] - 위도: $plat, 경도: $plon');
+        // 서버로 위치 전송 가능
+      });
+    });
+  }
+}
+
+
 
 // 라우터 클래스
 class MyApp extends StatelessWidget {
+
   const MyApp({Key? key}) : super(key: key);
 
   @override

@@ -39,7 +39,7 @@ dependencies:
   # workmanager: ^0.5.1
   flutter_foreground_task: ^9.1.0
   # background_locator: ^1.6.12
-  background_locator_2: ^2.0.6
+  flutter_background_geolocation: ^4.16.9
   # 설정창으로 이동 라이브러리
   app_settings: ^6.1.1
 
