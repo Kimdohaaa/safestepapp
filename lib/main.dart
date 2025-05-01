@@ -2,15 +2,16 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart' as geolocator; // Alias for geolocator
 import 'package:geolocator_android/geolocator_android.dart' as geolocator_android; // Alias for geolocator_android's AndroidSettings
 
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:safestepapp/main/home.dart';
-import 'package:safestepapp/map/locatioincallbackhandler.dart';
 import 'package:safestepapp/map/map.dart';
 import 'package:safestepapp/user/guardian/findpatient.dart';
 import 'package:safestepapp/user/guardian/guardian.dart';
@@ -39,6 +40,9 @@ void main() async {
   await _initialize();
 
   await LocationTrackingService().start();
+  await Firebase.initializeApp();  // Firebase 초기화
+  // FCM 토큰 발급 및 서버로 전송
+  await _getFcmTokenAndSend();
   // 실제 사용할 메인 위젯
   runApp(const MyApp());
 
@@ -94,6 +98,9 @@ class LocationTrackingService {
             if(findRoute.data != null){
               routeList = findRoute.data;
               print(routeList);
+
+
+
             }
           }
         }
@@ -160,6 +167,29 @@ class LocationTrackingService {
   }
 }
 
+
+// FCM 토큰을 발급받아서 pno 와 함께 서버로 보내는 함수 (나중에 보호자 화면 들어갈 때 로 위치 수정하기)
+Future<void> _getFcmTokenAndSend() async {
+  try {
+    Dio dio = Dio();
+    // FCM 토큰 발급
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final pno = prefs.getString("pno");
+      if (pno != null) {
+        // FCM 토큰 서버로 전송
+        final response = await dio.post(
+          "http://192.168.40.34:8080/location/savefcmtoken?pno=$pno&&fcmtoken=$fcmToken"
+
+        );
+        print("FCM 토큰 서버로 전송 성공: ${response.data}");
+      }
+    }
+  } catch (e) {
+    print("[에러] FCM 토큰 발급 또는 전송 실패: $e");
+  }
+}
 
 
 // 라우터 클래스

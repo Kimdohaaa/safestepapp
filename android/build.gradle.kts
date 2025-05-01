@@ -8,7 +8,7 @@ import org.gradle.api.file.Directory
 
 allprojects {
     repositories {
-        google()
+        google() // Google repository 추가
         mavenCentral()
 
         // [required] flutter_background_geolocation
@@ -51,4 +51,15 @@ subprojects {
 // clean 명령어 정의
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+
+buildscript {
+    repositories {
+        google() // Google repository 추가
+        mavenCentral()
+    }
+    dependencies {
+        // Firebase Google Services 플러그인 의존성 추가
+        classpath("com.google.gms:google-services:4.4.2")
+    }
 }

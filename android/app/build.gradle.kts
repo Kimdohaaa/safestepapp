@@ -4,18 +4,19 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")  // Firebase Google Services 플러그인
 }
 
 android {
     namespace = "com.example.safestepapp"
-    compileSdk = 35  // 또는 flutter.compileSdkVersion
+    compileSdk = 35  // flutter.compileSdkVersion에 맞추거나 수정할 수 있음
 
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.safestepapp"
         minSdk = 24
-        targetSdk = 35  // 또는 flutter.targetSdkVersion
+        targetSdk = 35  // flutter.targetSdkVersion에 맞추거나 수정할 수 있음
         versionCode = 1
         versionName = "1.0"
     }
@@ -39,7 +40,7 @@ android {
 }
 
 flutter {
-    source = "../.."
+    source = "../.."  // Flutter 프로젝트의 경로
 }
 
 // 버전 정보는 gradle.properties에서 불러오기
@@ -49,4 +50,7 @@ val playServicesLocationVersion: String by project
 dependencies {
     implementation("androidx.appcompat:appcompat:$appCompatVersion")
     implementation("com.google.android.gms:play-services-location:$playServicesLocationVersion")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

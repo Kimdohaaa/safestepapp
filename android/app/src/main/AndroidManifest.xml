@@ -27,6 +27,7 @@
             android:exported="true"
             android:foregroundServiceType = "location"/>
 
+        
         <!--
         <service
             android:name="com.almoullim.background_locator.BackgroundLocatorService"
