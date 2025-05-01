@@ -21,6 +21,7 @@ class _SignupState extends State<Signup> {
   // [#] 회원가입
   void signup() async{
     try{
+      print("회원가입버튼 테스트 : ${gidController.text}");
 
       if (gidController.text == '' ||
           gpwdController.text == '' ||

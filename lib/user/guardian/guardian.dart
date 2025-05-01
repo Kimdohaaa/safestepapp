@@ -20,10 +20,12 @@ class _GuardianState extends State<Guardian> {
   // [*] DIO
   Dio dio = Dio();
 
-
   // [#] 로그인 
   void login() async{
     print("로그인버튼");
+    // dio.options.connectTimeout = 10000;  // 연결 타임아웃 (10초)
+    // dio.options.receiveTimeout = 10000;  // 응답 타임아웃 (10초)
+    dio.options.connectTimeout = Duration(milliseconds: 50000);;
     try{
       final obj = {
         "gid" : gidController.text,
