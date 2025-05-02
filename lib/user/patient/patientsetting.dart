@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PatientSetting extends StatefulWidget {
+  const PatientSetting({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _PatientSettingState();
@@ -130,7 +132,7 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text.rich(
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
@@ -162,18 +164,18 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
           ),
 
           // 상단 여백과 이미지
-          SizedBox(height: 59.5),
+          const SizedBox(height: 59.5),
           Image.asset(
             'assets/images/SafeStep_logo.PNG', // 여기에 이미지 경로를 넣어주세요
             width: 200,
             height: 200, // 이미지 크기 조정
           ),
 
-          SizedBox(height: 35),
+          const SizedBox(height: 35),
           // 버튼 Row
-          Text("위치 권한 설정 페이지 입니다."),
+          const Text("위치 권한 설정 페이지 입니다."),
 
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -181,7 +183,7 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
               Container(
                 width: 250,
                 height: 100,
-                margin: EdgeInsets.only(right: 5),
+                margin: const EdgeInsets.only(right: 5),
                 decoration: BoxDecoration(
                   color: _isGranted ? Colors.red : Colors.green,
                   borderRadius: BorderRadius.circular(8),
@@ -191,7 +193,7 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
                   child: Center( // Center 위젯을 사용하여 텍스트를 정확히 중앙에 배치
                     child: Text(
                       _isGranted ? '위치 권한 허용중' : '위치 권한 거부중',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
@@ -203,7 +205,7 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
             ],
           ),
 
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -224,12 +226,12 @@ class _PatientSettingState extends State<PatientSetting> with WidgetsBindingObse
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent, // 투명하게 만들어서 container 배경색 유지
                     elevation: 0, // 그림자 제거
-                    minimumSize: Size(150, 50), // 이 부분은 더 이상 필요
+                    minimumSize: const Size(150, 50), // 이 부분은 더 이상 필요
                   ),
                   child: Center( // Center 위젯으로 텍스트 중앙 정렬
                     child: Text(
                       _isState ? '위치 조회 허용중' : '위치 조회 거부중',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 25,
                         fontWeight: FontWeight.bold,

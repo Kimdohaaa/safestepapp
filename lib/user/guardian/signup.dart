@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class Signup extends StatefulWidget{
+  const Signup({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _SignupState();
@@ -29,7 +31,7 @@ class _SignupState extends State<Signup> {
           gemailController.text == '' ||
           gphoneController.text == '') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("모든 항목을 입력하세요")),
+          const SnackBar(content: Text("모든 항목을 입력하세요")),
         );
         return;
       }
@@ -50,32 +52,32 @@ class _SignupState extends State<Signup> {
         Navigator.pushNamed(context, "/enrollpatient", arguments: response.data);
       }else if(data == -1){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("이미 존재하는 아이디입니다.")),
+          const SnackBar(content: Text("이미 존재하는 아이디입니다.")),
         );
         return;
       }else if(data == -2){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("이미 존재하는 이메일입니다.")),
+          const SnackBar(content: Text("이미 존재하는 이메일입니다.")),
         );
         return;
       }else if(data == -3){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
+          const SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
         );
         return;
       }else if(data == -4){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
+          const SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
         );
         return;
       }else if(data == -5){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("아이디와 비밀번호의 길이는 3 ~ 15 이내입니다.")),
+          const SnackBar(content: Text("아이디와 비밀번호의 길이는 3 ~ 15 이내입니다.")),
         );
         return;
       }else if(data == 0){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("관리자에게 문의하세요.")),
+          const SnackBar(content: Text("관리자에게 문의하세요.")),
         );
         return;
       }
@@ -93,7 +95,7 @@ class _SignupState extends State<Signup> {
       appBar: AppBar(
         backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
         elevation: 0, // 그림자 제거
-        title: Text.rich(
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
@@ -119,76 +121,76 @@ class _SignupState extends State<Signup> {
       body: Center(  // Center 위젯을 사용하여 중앙 정렬
         child: Container(
 
-          padding: EdgeInsets.all(30), // 전체 안쪽 여백 50 지정
-          margin: EdgeInsets.all(30), // 전체 바깥 여백 50 지정
+          padding: const EdgeInsets.all(30), // 전체 안쪽 여백 50 지정
+          margin: const EdgeInsets.all(30), // 전체 바깥 여백 50 지정
           child: Column(
             children: [
-              SizedBox(height: 53,),
+              const SizedBox(height: 53,),
               // 로그인 텍스트
-              Text("보호자 회원가입 페이지 입니다."),
+              const Text("보호자 회원가입 페이지 입니다."),
 
-              SizedBox(height: 30),  // 텍스트와 TextField 사이의 여백
+              const SizedBox(height: 30),  // 텍스트와 TextField 사이의 여백
 
               TextField(
                 controller: gidController,
-                decoration:  InputDecoration(
+                decoration:  const InputDecoration(
                     labelText: '보호자 아이디',
                     hintText: '3 ~ 13자 이내',
                     border: OutlineInputBorder()),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: gpwdController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '보호자 비밀번호',
                     hintText: '3 ~ 13자 이내',
                     border: OutlineInputBorder()),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: gnameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '보호자 이름',
                     border: OutlineInputBorder()),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: gemailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '보호자 이메일',
                     border: OutlineInputBorder()),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: gphoneController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '보호자 휴대폰번호',
                     hintText: '- 없이 11 자리 입력',
                     border: OutlineInputBorder()),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               
 
-              SizedBox(height: 15),  // 로그인 버튼과 텍스트 사이에 여백 추가
+              const SizedBox(height: 15),  // 로그인 버튼과 텍스트 사이에 여백 추가
 
 
               ElevatedButton(
                 onPressed: signup, // 버튼 클릭 시 할 작업
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // 버튼 색상 파란색
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero, // 네모 모양으로 설정
                   ),
-                  minimumSize: Size(130, 50), // 버튼 크기 지정
+                  minimumSize: const Size(130, 50), // 버튼 크기 지정
                 ),
-                child: Text(
+                child: const Text(
                   "회원가입",
                   style: TextStyle(
                     color: Colors.white, // 버튼 텍스트 색상

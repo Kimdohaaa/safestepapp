@@ -104,6 +104,8 @@ class _NaverMapAppState extends State<NaverMapApp> {
 
 // 환자의 위치 등록 파일 //
 class EnrollLocation extends StatefulWidget {
+  const EnrollLocation({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _EnrollLocationState();
@@ -149,7 +151,7 @@ class _EnrollLocationState extends State<EnrollLocation> {
 
       if(data == true){
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => Guardian()));
+            MaterialPageRoute(builder: (context) => const Guardian()));
       }
     }catch(e){
       print(e);
@@ -165,7 +167,7 @@ class _EnrollLocationState extends State<EnrollLocation> {
       appBar: AppBar(
         backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
         elevation: 0, // 그림자 제거
-        title: Text.rich(
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
@@ -188,12 +190,12 @@ class _EnrollLocationState extends State<EnrollLocation> {
           ),
         ),
       ),
-      body: NaverMapApp(), // 지도 위젯 출력
+      body: const NaverMapApp(), // 지도 위젯 출력
       bottomNavigationBar: BottomAppBar(
         color: Colors.white, // 배경색 흰색
         child: Container(
           height: 70, // 전체 높이 50
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: Border(
 
             ),
@@ -206,12 +208,12 @@ class _EnrollLocationState extends State<EnrollLocation> {
                 onPressed: sendLocation, // 버튼 클릭 시 할 작업
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // 버튼 색상 파란색
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero, // 네모 모양으로 설정
                   ),
-                  minimumSize: Size(130, 50), // 버튼 크기 지정
+                  minimumSize: const Size(130, 50), // 버튼 크기 지정
                 ),
-                child: Text(
+                child: const Text(
                   "안전위치설정",
                   style: TextStyle(
                     color: Colors.white, // 버튼 텍스트 색상

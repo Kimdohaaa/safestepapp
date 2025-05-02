@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class UpdatePatient extends StatefulWidget{
+  const UpdatePatient({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _UpdatePatientState();
@@ -121,22 +123,22 @@ class _UpdatePatientState extends State<UpdatePatient>{
         print("성공");
         print(response.data);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("환자 정보 수정이 완료되었습니다.")),
+          const SnackBar(content: Text("환자 정보 수정이 완료되었습니다.")),
         );
         Navigator.pushNamed(context, "/guardianmain");
       }else if(data == -1){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
+          const SnackBar(content: Text("유효한 전화번호 형식을 입력하세요.")),
         );
         return;
       }else if(data == -2){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("유효한 나이를 입력하세요.")),
+          const SnackBar(content: Text("유효한 나이를 입력하세요.")),
         );
         return;
       }else if(data == -3){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
+          const SnackBar(content: Text("이미 존재하는 전화번호입니다.")),
         );
         return;
       }
@@ -153,7 +155,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
       appBar: AppBar(
         backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
         elevation: 0, // 그림자 제거
-        title: Text.rich(
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
@@ -179,51 +181,51 @@ class _UpdatePatientState extends State<UpdatePatient>{
       body: Center( // Center 위젯을 사용하여 중앙 정렬
         child: Container(
 
-          padding: EdgeInsets.all(30), // 전체 안쪽 여백 50 지정
-          margin: EdgeInsets.all(30), // 전체 바깥 여백 50 지정
+          padding: const EdgeInsets.all(30), // 전체 안쪽 여백 50 지정
+          margin: const EdgeInsets.all(30), // 전체 바깥 여백 50 지정
           child: Column(
             children: [
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               // 로그인 텍스트
-              Text("환자 정보 수정 페이지 입니다."),
+              const Text("환자 정보 수정 페이지 입니다."),
 
-              SizedBox(height: 30), // 텍스트와 TextField 사이의 여백
+              const SizedBox(height: 30), // 텍스트와 TextField 사이의 여백
 
               TextField(
                 controller: pnameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '환자 이름',
                     border: OutlineInputBorder()),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: pnumberController,
                 readOnly: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '환자 주민등록번호',
                     border: OutlineInputBorder()),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: pageController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '환자 나이',
                     border: OutlineInputBorder()),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               TextField(
                 controller: pphoneController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '환자 전화번호',
                     border: OutlineInputBorder()),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               DropdownButtonFormField<String>(
                 value: selectedGender,
@@ -232,7 +234,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
                     selectedGender = newValue;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '환자 성별',
                   border: OutlineInputBorder(),
                 ),
@@ -246,7 +248,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
                 ))
                     .toList(),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
 
               DropdownButtonFormField<String>(
@@ -256,7 +258,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
                     selectedGrade = newValue;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '치매 등급',
                   border: OutlineInputBorder(),
                 ),
@@ -270,7 +272,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
                 ))
                     .toList(),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
 
               DropdownButtonFormField<String>(
@@ -280,7 +282,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
                     selectedRelation = newValue;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '환자와의 관계',
                   border: OutlineInputBorder(),
                 ),
@@ -293,19 +295,19 @@ class _UpdatePatientState extends State<UpdatePatient>{
                 }).toList(),
               ),
 
-              SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
+              const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
 
 
               ElevatedButton(
                 onPressed: updatePatient, // 버튼 클릭 시 할 작업
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // 버튼 색상 파란색
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero, // 네모 모양으로 설정
                   ),
-                  minimumSize: Size(130, 50), // 버튼 크기 지정
+                  minimumSize: const Size(130, 50), // 버튼 크기 지정
                 ),
-                child: Text(
+                child: const Text(
                   "환자정보수정",
                   style: TextStyle(
                     color: Colors.white, // 버튼 텍스트 색상

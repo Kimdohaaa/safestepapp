@@ -1,5 +1,7 @@
 import org.gradle.api.tasks.Delete
 import org.gradle.api.file.Directory
+// val kotlinVersion = "2.1.0"
+
 
 // 버전 변수는 gradle.properties에서 관리하는 게 가장 안전함
 // gradle.properties에서 다음과 같이 정의할 수 있습니다:
@@ -52,14 +54,26 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
-
 buildscript {
+    val kotlinVersion = project.property("kotlinVersion") as String
     repositories {
         google() // Google repository 추가
         mavenCentral()
     }
     dependencies {
+
+        //
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
+
+
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+
         // Firebase Google Services 플러그인 의존성 추가
-        classpath("com.google.gms:google-services:4.4.2")
+        classpath("com.google.gms:google-services:4.4.2")  // 해당 플러그인 버전 명시
+
+//        // Firebase Google Services 플러그인 의존성 추가
+//        classpath("com.google.gms:google-services:4.4.2")
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
+
     }
 }

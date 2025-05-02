@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")  // Firebase Google Services 플러그인
 }

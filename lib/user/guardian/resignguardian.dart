@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:safestepapp/main/home.dart';
 
 class ResignGuardian extends StatefulWidget{
+  const ResignGuardian({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _ResignGuardianState();
@@ -48,11 +50,11 @@ class _ResignGuardianState extends State<ResignGuardian>{
         if(response.data == true){
           print("회원탈퇴성공");
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("회원탈퇴처리 되었습니다.")),
+            const SnackBar(content: Text("회원탈퇴처리 되었습니다.")),
           );
           // 메인페이지로 이동 시키기
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => Home())
+              MaterialPageRoute(builder: (context) => const Home())
           );
         }else{
           print("회원탈퇴 실패");
@@ -69,32 +71,32 @@ class _ResignGuardianState extends State<ResignGuardian>{
       
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(30),
-          margin: EdgeInsets.all(30),
+          padding: const EdgeInsets.all(30),
+          margin: const EdgeInsets.all(30),
           child: Column(
             children: [
-              SizedBox(height: 53,),
-              Text("회원탈퇴페이지입니다."),
+              const SizedBox(height: 53,),
+              const Text("회원탈퇴페이지입니다."),
 
               TextField(
                 controller:  gpwdController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: '비밀번호',
                     border: OutlineInputBorder()),
               ),
 
-              SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
+              const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
 
               ElevatedButton(
                 onPressed: deleteGuardian, // 버튼 클릭 시 할 작업
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // 버튼 색상 파란색
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero, // 네모 모양으로 설정
                   ),
-                  minimumSize: Size(130, 50), // 버튼 크기 지정
+                  minimumSize: const Size(130, 50), // 버튼 크기 지정
                 ),
-                child: Text(
+                child: const Text(
                   "회원탈퇴",
                   style: TextStyle(
                     color: Colors.white, // 버튼 텍스트 색상

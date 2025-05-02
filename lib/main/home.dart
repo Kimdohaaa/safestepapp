@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget{
+  const Home({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _HomeState();
@@ -17,7 +19,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
         elevation: 0, // 그림자 제거
-        title: Text.rich(
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
@@ -50,14 +52,14 @@ class _HomeState extends State<Home> {
           ),
 
           // 상단 여백과 이미지
-          SizedBox(height: 59.5),
+          const SizedBox(height: 59.5),
           Image.asset(
             'assets/images/SafeStep_logo.PNG', // 여기에 이미지 경로를 넣어주세요
             width: 200,
             height: 200, // 이미지 크기 조정
           ),
 
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
           // 버튼 Row
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -66,14 +68,14 @@ class _HomeState extends State<Home> {
               Container(
                 width: 150,
                 height: 170,
-                margin: EdgeInsets.only(right: 5),
+                margin: const EdgeInsets.only(right: 5),
                 decoration: BoxDecoration(
                   color: Colors.green,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: InkWell(
                   onTap: () => Navigator.pushNamed(context, "/authentication"),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.person, color: Colors.white, size: 40),
@@ -94,14 +96,14 @@ class _HomeState extends State<Home> {
               Container(
                 width: 150,
                 height: 170,
-                margin: EdgeInsets.only(left: 5),
+                margin: const EdgeInsets.only(left: 5),
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: InkWell(
                   onTap: () => Navigator.pushNamed(context, "/guardian"),
-                  child: Column(
+                  child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.person_outline, color: Colors.white, size: 40),

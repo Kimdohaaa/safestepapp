@@ -5,46 +5,53 @@ import 'dart:developer';
 
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:safestepapp/user/guardian/guardian.dart';
 import 'package:safestepapp/user/guardian/guardianmain.dart';
 
-// 경도와 위도를 저장할 변수
-double plon = 0.0; // 경도
-double plat = 0.0; // 위도
-
-// 지도 초기화하기
 Future<void> _initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NaverMapSdk.instance.initialize(
-      clientId: '0i2o3ztm19',     // 클라이언트 ID 설정
+      clientId: '0i2o3ztm19', // 클라이언트 ID 설정
       onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed")
   );
 }
 
 class NaverMapApp extends StatefulWidget {
-  const NaverMapApp({Key? key}) : super(key: key);
+  final void Function(double lat, double lon) onLocationSelected;
+
+  const NaverMapApp({Key? key, required this.onLocationSelected}) : super(key: key);
 
   @override
   _NaverMapAppState createState() => _NaverMapAppState();
 }
 
 class _NaverMapAppState extends State<NaverMapApp> {
-  late NaverMapController _controller; // NaverMapController를 사용하여 지도 컨트롤
-  late NMarker _marker; // 마커 객체
-  late NLatLng _userLatLng; // 현재 사용자의 위도, 경도를 저장할 변수
+  late NaverMapController _controller;
+  NMarker? _marker; // nullable로 변경
 
-  @override
-  void initState() {
-    super.initState();
-    _marker = NMarker(
-      id: 'current_location',
-      position: NLatLng(plat, plon), // 초기 마커 위치
-    );
+  // 현재 위치 가져오기
+  Future<Position> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('위치 서비스가 비활성화되어 있습니다.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('위치 권한이 거부되었습니다.');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Position>(  // 현재 위치를 가져오는 FutureBuilder
+    return FutureBuilder<Position>(
       future: _getCurrentLocation(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -52,183 +59,166 @@ class _NaverMapAppState extends State<NaverMapApp> {
         }
 
         final userPos = snapshot.data!;
-        _userLatLng = NLatLng(userPos.latitude, userPos.longitude); // 위치 갱신
+        final _userLatLng = NLatLng(userPos.latitude, userPos.longitude);
 
         return NaverMap(
           options: NaverMapViewOptions(
             initialCameraPosition: NCameraPosition(
-              target: _userLatLng,  // 초기 카메라 위치
+              target: _userLatLng,
               zoom: 15,
             ),
             locationButtonEnable: true,
           ),
           onMapReady: (controller) {
-            log("onMapReady", name: "onMapReady");
             _controller = controller;
-
-            // 초기 위치에 마커 추가
-            _controller.addOverlay(_marker);
           },
-          onMapTapped: (point, latLng) { // 파라미터 타입 변경
+          onMapTapped: (point, latLng) {
             setState(() {
-              // 마커의 위치 업데이트
+              // 기존 마커 제거
+              if (_marker != null) {
+                // _marker!.info를 사용하여 NOverlayInfo를 얻고, deleteOverlay 메서드에 전달
+                _controller.deleteOverlay(_marker!.info);
+              }
+
+              // 새 마커 추가
               _marker = NMarker(
-                id: 'new_location',
-                position: latLng, // NLatLng로 변환된 값
+                id: 'selected_location',
+                position: latLng,
               );
+
+              _controller.addOverlay(_marker!);
+              widget.onLocationSelected(latLng.latitude, latLng.longitude);
             });
 
-            // 지도에 마커 추가 또는 업데이트
-            _controller.addOverlay(_marker);  // 새 마커 위치를 반영
-
-            // 경도와 위도 로그로 출력
-            plon = latLng.longitude;
-            plat = latLng.latitude;
-            log("선택한 위도 : $plat, 선택한 경도: $plon", name: "onMapTapped");
           },
         );
       },
     );
   }
-
-  // 위치를 가져오는 함수
-  Future<Position> _getCurrentLocation() async {
-    LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      throw Exception("위치 권한이 거부되었습니다.");
-    } else if (permission == LocationPermission.deniedForever) {
-      throw Exception("위치 권한이 영구적으로 거부되었습니다.");
-    }
-    return await Geolocator.getCurrentPosition();
-  }
 }
 
-// 환자의 위치 등록 파일 //
 class ChangeLocation extends StatefulWidget {
+  const ChangeLocation({Key? key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
-    return _ChangeLocationState();
-  }
+  _ChangeLocationState createState() => _ChangeLocationState();
 }
 
 class _ChangeLocationState extends State<ChangeLocation> {
   Dio dio = Dio();
-
-  int? pno; // 전달받을 환자 번호를 저장할 변수
+  double? selectedLat;
+  double? selectedLon;
+  int? pno;
 
   @override
   void initState() {
     super.initState();
-    _initialize(); // 네이버맵 초기화
+    _initialize();
 
-    // initState에서 arguments를 안전하게 접근하기 위해 Future.delayed 사용
     Future.delayed(Duration.zero, () {
       final args = ModalRoute.of(context)?.settings.arguments;
-      if (args != null && args is int) {
+      if (args is int) {
         setState(() {
           pno = args;
-          print("전달받은 환자 번호 (EnrollLocation): $pno");
         });
-      } else {
-        print("환자 번호가 전달되지 않았거나 타입이 다릅니다.");
       }
     });
   }
 
-  // [#] 사용자가 선택한 위도와 경도를 서버로 보내기
-  void sendLocation() async{
-    try{
-      final sendData = {
-        "plon" : plon,
-        "plat" : plat,
-        "pno" : pno
-      };
-      final response = await dio.post("http://192.168.40.34:8080/location", data:  sendData);
+  // 서버로 위치 전송
+  void sendLocation() async {
+    if (selectedLat == null || selectedLon == null || pno == null) {
+      print("위치 또는 환자 번호가 없음");
+      return;
+    }
+
+    try {
+      final response = await dio.post("http://192.168.40.34:8080/location", data: {
+        "plon": selectedLon,
+        "plat": selectedLat,
+        "pno": pno,
+      });
 
       final data = response.data;
-      print("위치 저장결과 $data");
-
-      if(data == true){
+      if (data == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("안전 위치 설정이 완료되었습니다.")),
+          const SnackBar(content: Text("안전 위치 설정이 완료되었습니다.")),
         );
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => GuardianMain()));
+            MaterialPageRoute(builder: (context) => const GuardianMain()));
       }
-    }catch(e){
-      print(e);
+    } catch (e) {
+      print("전송 오류: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-
-      // AppBar 배경색을 하얀색으로 설정
       appBar: AppBar(
-        backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
-        elevation: 0, // 그림자 제거
-        title: Text.rich(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
-                text: "SafeStep", // SafeStep 텍스트
+                text: "SafeStep",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 27, // 폰트 크기 30px
-                  fontWeight: FontWeight.bold, // 굵게 설정
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               TextSpan(
-                text: "안전한 위치 확인 앱", // 안전한 위치 확인 앱 텍스트
+                text: "안전한 위치 확인 앱",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 14, // 폰트 크기 15px
-                  fontWeight: FontWeight.w300, // 얇게 설정
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
                 ),
               ),
             ],
           ),
         ),
       ),
-      body: NaverMapApp(), // 지도 위젯 출력
+      body: NaverMapApp(
+        onLocationSelected: (lat, lon) {
+          setState(() {
+            selectedLat = lat;
+            selectedLon = lon;
+          });
+        },
+      ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white, // 배경색 흰색
+        color: Colors.white,
         child: Container(
-          height: 70, // 전체 높이 50
-          decoration: BoxDecoration(
-            border: Border(
-
-            ),
-          ),
+          height: 70,
           child: Center(
             child: SizedBox(
-                height: 50,
-                width: 200,
-                child: ElevatedButton(
-                  onPressed: sendLocation, // 버튼 클릭 시 할 작업
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // 버튼 색상 파란색
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // 네모 모양으로 설정
-                    ),
-                    minimumSize: Size(130, 50), // 버튼 크기 지정
+              height: 50,
+              width: 200,
+              child: ElevatedButton(
+                onPressed: sendLocation,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
                   ),
-                  child: Text(
-                    "안전위치설정",
-                    style: TextStyle(
-                      color: Colors.white, // 버튼 텍스트 색상
-                      fontSize: 16, // 텍스트 크기
-                      fontWeight: FontWeight.bold,
-                    ),
+                  minimumSize: const Size(130, 50),
+                ),
+                child: const Text(
+                  "안전위치설정",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                )
+                ),
+              ),
             ),
           ),
         ),
       ),
-
     );
   }
 }

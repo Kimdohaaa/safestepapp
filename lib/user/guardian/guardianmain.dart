@@ -3,13 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:safestepapp/main/home.dart';
 import 'package:safestepapp/user/guardian/findpatient.dart';
-import 'package:safestepapp/user/guardian/guardian.dart';
 import 'package:safestepapp/user/guardian/guardianhome.dart';
 import 'package:safestepapp/user/guardian/guardianinfo.dart';
 import 'package:safestepapp/user/guardian/resignguardian.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GuardianMain extends StatefulWidget{
+  const GuardianMain({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _GuardianMainState();
@@ -23,11 +24,11 @@ class _GuardianMainState extends State<GuardianMain> {
 
   // 페이지 리스트
   final List<Widget> _pages = [
-    GuardianHome(),
-    GuardianInfo(), // "내정보" 페이지
-    FindPatient(), // "환자정보" 페이지
-    ResignGuardian(), // "회원탈퇴" 페이지
-    Text("로그아웃") // 해당 파일에 구현할거임
+    const GuardianHome(),
+    const GuardianInfo(), // "내정보" 페이지
+    const FindPatient(), // "환자정보" 페이지
+    const ResignGuardian(), // "회원탈퇴" 페이지
+    const Text("로그아웃") // 해당 파일에 구현할거임
   ];
 
 
@@ -63,7 +64,7 @@ class _GuardianMainState extends State<GuardianMain> {
         print(response.data);
         print("로그아웃 성공");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("로그아웃되었습니다.")),
+          const SnackBar(content: Text("로그아웃되었습니다.")),
         );
       }
     }catch(e){
@@ -80,7 +81,7 @@ class _GuardianMainState extends State<GuardianMain> {
         backgroundColor: Colors.white, // AppBar 배경색을 하얀색으로 설정
         elevation: 0, // 그림자 제거
         automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
-        title: Text.rich(
+        title: const Text.rich(
           TextSpan(
             children: [
               TextSpan(
@@ -109,7 +110,7 @@ class _GuardianMainState extends State<GuardianMain> {
       body: _pages[selectedIndex], // 선택된 페이지 표시
       bottomNavigationBar: Container(
         height: 70,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white, // 배경색 흰색
           border: Border(
             top: BorderSide(
@@ -126,7 +127,7 @@ class _GuardianMainState extends State<GuardianMain> {
               logout(); // 로그아웃 처리
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Home()),
+                MaterialPageRoute(builder: (context) => const Home()),
               );
             } else {
               setState(() {

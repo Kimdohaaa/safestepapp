@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class FindPatient extends StatefulWidget{
+  const FindPatient({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _FindPatientState();
@@ -110,11 +112,11 @@ class _FindPatientState extends State<FindPatient>{
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('비밀번호 입력'),
+          title: const Text('비밀번호 입력'),
           content: TextField(
             controller: passwordController,
             obscureText: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: '비밀번호',
               hintText: '비밀번호를 입력해주세요',
             ),
@@ -124,7 +126,7 @@ class _FindPatientState extends State<FindPatient>{
               onPressed: () {
                 Navigator.of(context).pop(false);  // 취소
               },
-              child: Text('취소'),
+              child: const Text('취소'),
             ),
             TextButton(
               onPressed: () {
@@ -135,7 +137,7 @@ class _FindPatientState extends State<FindPatient>{
                   Navigator.of(context).pop(false);  // 비밀번호 틀리면 false 반환
                 }
               },
-              child: Text('확인'),
+              child: const Text('확인'),
             ),
           ],
         );
@@ -158,7 +160,7 @@ class _FindPatientState extends State<FindPatient>{
                     return Card(
                       color: Colors.white, // 배경색 흰색
                       shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.black, width: 1), // 1px 검은 테두리
+                        side: const BorderSide(color: Colors.black, width: 1), // 1px 검은 테두리
                         borderRadius: BorderRadius.circular(8), // 원하는 만큼 라운딩 (선택사항)
                       ),
                       child: ListTile(
@@ -180,19 +182,19 @@ class _FindPatientState extends State<FindPatient>{
                               onPressed: () {
                                 Navigator.pushNamed(context, "/changeLocation", arguments: patient['pno']);
                               },
-                              icon: Icon(Icons.location_on),
+                              icon: const Icon(Icons.location_on),
                             ),
                             IconButton(
                               onPressed: () {
                                 Navigator.pushNamed(context, "/updatepatient", arguments: patient['pno']);
                               },
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                             ),
                             IconButton(
                               onPressed: () {
                                 deletePatient(patient['pno']);
                               },
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                             ),
                           ],
                         ),
@@ -207,12 +209,12 @@ class _FindPatientState extends State<FindPatient>{
               onPressed: ()=>{Navigator.pushNamed(context, "/additionpatient", arguments: gno)}, // 버튼 클릭 시 할 작업
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue, // 버튼 색상 파란색
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.zero, // 네모 모양으로 설정
                 ),
-                minimumSize: Size(130, 50), // 버튼 크기 지정
+                minimumSize: const Size(130, 50), // 버튼 크기 지정
               ),
-              child: Text(
+              child: const Text(
                 "환자 추가",
                 style: TextStyle(
                   color: Colors.white, // 버튼 텍스트 색상
