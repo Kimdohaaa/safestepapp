@@ -133,7 +133,7 @@ class _ChangeLocationState extends State<ChangeLocation> {
     }
 
     try {
-      final response = await dio.post("http://192.168.40.34:8080/location", data: {
+      final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location", data: {
         "plon": selectedLon,
         "plat": selectedLat,
         "pno": pno,

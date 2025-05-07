@@ -21,7 +21,7 @@ class _AuthenticationState extends State< Authentication>{
   void authentication() async{
     try{
       final pphone = pphoneController.text;
-      final response = await dio.post("http://192.168.40.34:8080/location/findpno?pphone=$pphone");
+      final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/findpno?pphone=$pphone");
 
       if(response.data > 0) {
         SharedPreferences prefs = await SharedPreferences.getInstance();

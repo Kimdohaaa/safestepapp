@@ -100,7 +100,7 @@ class LocationTrackingService {
         // [3] pno 가 유효한지 DB 에서 확인
         print(">>>>>>>>>>>>>>>>pno조회 시작");
         try{
-          final response = await dio.get("http://192.168.40.34:8080/patient/find?pno=$pno");
+          final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/find?pno=$pno");
           print("pno1 성공");
           print("환자번호확인 : ${response.data}");
 
@@ -145,7 +145,7 @@ class LocationTrackingService {
               "plat" : plat,
               "pno" : pno
             };
-            final response = await dio.post("http://192.168.40.34:8080/location/save",data: obj);
+            final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/save",data: obj);
 
             print("안전위치확인 ${response.data}");
 
@@ -156,7 +156,7 @@ class LocationTrackingService {
             // [6] 안전반경 이탈 시 레디스에 저장된 위치정보 조회
             print(">>>>>>>>>>>>>>>>위치이탈함");
             if(response.data == false){
-              final findRoute = await dio.get("http://192.168.40.34:8080/location/findroute?pno=$pno");
+              final findRoute = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/findroute?pno=$pno");
 
               if (findRoute.statusCode == 200 && findRoute.data != null) {
                 routeList = findRoute.data;
@@ -167,15 +167,18 @@ class LocationTrackingService {
                 // 서버에서 해당 환자 보호자의 토큰 꺼내오기
                 try{
                   try {
-                    final findToken = await dio.get("http://192.168.40.34:8080/location/findfcmtoken?pno=$pno");
+                    final findToken = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/findfcmtoken?pno=$pno");
                     final fcmToken = findToken.data;
 
                     if (fcmToken != null) {
-                      await dio.post("http://192.168.40.34:8080/location/sendNotification", data: {
+                      print("토큰 전송 시작");
+                      await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/fcmtoken/sendNotification", data: {
                         "token": fcmToken,
                         "title": "위험 알림",
                         "body": "환자가 안전구역을 벗어났습니다!" // 환자이름 빼와서 같이 보내기
                       });
+
+
                     }
                   } catch (e) {
                     print("푸시 전송 실패: $e");
@@ -235,20 +238,20 @@ Future<void> _getFcmTokenAndSend() async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
     print("********FCM 토큰 발급됨 : $fcmToken");
 
-    // if (fcmToken != null) {
-    //   final prefs = await SharedPreferences.getInstance();
-    //   final gno = prefs.getString("gno") ?? "1"; // 테스트용 기본값
-    //     // FCM 토큰 서버로 전송
-    //   final response = await dio.post(
-    //     "http://192.168.40.34:8080/location/savefcmtoken",
-    //     queryParameters: {
-    //       "gno": gno,
-    //       "fcmToken": fcmToken,
-    //     },
-    //   );
-    //     print("FCM 토큰 서버로 전송 성공: ${response.data}");
-    //
-    // }
+    if (fcmToken != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final gno = prefs.getString("gno") ?? "1"; // 테스트용 기본값
+        // FCM 토큰 서버로 전송
+      final response = await dio.post(
+        "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/savefcmtoken",
+        queryParameters: {
+          "gno": gno,
+          "fcmToken": fcmToken,
+        },
+      );
+        print("FCM 토큰 서버로 전송 성공: ${response.data}");
+
+    }
   } catch (e) {
     print(" FCM 토큰 전송 실패: $e");
   }

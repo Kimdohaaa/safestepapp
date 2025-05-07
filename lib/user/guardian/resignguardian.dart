@@ -20,7 +20,7 @@ class _ResignGuardianState extends State<ResignGuardian>{
   // [#] 현재 로그인 중인 gno 가져오기
   void findGno() async {
     try{
-      final response = await dio.get("http://192.168.40.34:8080/guardian/findgno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/findgno");
 
       if(response.data > 0){
         setState(() {
@@ -45,7 +45,7 @@ class _ResignGuardianState extends State<ResignGuardian>{
     try{
       String gpwd = gpwdController.text;
       if(gno > 0) {
-        final response = await dio.delete("http://192.168.40.34:8080/guardian?gno=$gno&gpwd=$gpwd");
+        final response = await dio.delete("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian?gno=$gno&gpwd=$gpwd");
 
         if(response.data == true){
           print("회원탈퇴성공");

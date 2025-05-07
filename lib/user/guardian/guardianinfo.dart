@@ -56,7 +56,7 @@ class _GuardianInfo extends State<GuardianInfo> {
   void findInfo(token) async {
     try{
       final response = await dio.get(
-        "http://192.168.40.34:8080/guardian/info",
+        "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/info",
         options: Options(
           headers: {
             'Authorization': token,
@@ -100,7 +100,7 @@ class _GuardianInfo extends State<GuardianInfo> {
         "gno" : gnoController.text // gno 받아와야됨
       };
 
-      final response = await dio.put("http://192.168.40.34:8080/guardian/update", data: obj);
+      final response = await dio.put("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/update", data: obj);
       print(response.data);
       final data = response.data;
       if(response.data == 1){

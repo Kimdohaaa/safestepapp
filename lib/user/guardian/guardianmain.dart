@@ -59,7 +59,7 @@ class _GuardianMainState extends State<GuardianMain> {
   void logout() async{
     try{
       if(isLogin ==  true){
-        final response = await dio.post("http://192.168.40.34:8080/guardian/logout");
+        final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/logout");
         
         print(response.data);
         print("로그아웃 성공");

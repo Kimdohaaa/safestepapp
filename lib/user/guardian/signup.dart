@@ -44,7 +44,7 @@ class _SignupState extends State<Signup> {
         "gphone" : gphoneController.text
       };
       
-      final response = await dio.post("http://192.168.40.34:8080/guardian/signup", data: obj);
+      final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/signup", data: obj);
 
       final data = response.data;
       if(response.data > 0){

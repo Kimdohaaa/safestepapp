@@ -105,7 +105,7 @@ class _NaverMapAppState extends State<NaverMapApp> {
             }
 
             // 환자의 안전위치 조회
-            final safeRes = await dio.get("http://192.168.40.34:8080/patient/find?pno=$pno");
+            final safeRes = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/find?pno=$pno");
             final safeData = safeRes.data;
 
             double? safeLat = safeData['plat'];
@@ -131,7 +131,7 @@ class _NaverMapAppState extends State<NaverMapApp> {
   // [#] 환자의 이름 조회
   Future<String> findPname(int pno) async {
     try {
-      final response = await dio.get("http://192.168.40.34:8080/patient/find?pno=$pno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/find?pno=$pno");
       return response.data['pname'] ?? 'Unknown';
     } catch (e) {
       print(e);
@@ -142,7 +142,7 @@ class _NaverMapAppState extends State<NaverMapApp> {
   // [#] 환자의 이동 경로 출력
   Future<void> drawRouteForPatient(int pno) async {
     try {
-      final response = await dio.get("http://192.168.40.34:8080/location/findroute?pno=$pno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/findroute?pno=$pno");
 
       if (response.data is List) {
         List<NLatLng> pathPoints = [];
@@ -225,7 +225,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   // [#] 현재 로그인 중인 gno 조회
   void findGno() async {
     try {
-      final response = await dio.get("http://192.168.40.34:8080/guardian/findgno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/findgno");
       if (response.data > 0) {
         setState(() {
           gno = response.data;
@@ -240,7 +240,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   // [#] 해당 gno 가 관리 중인 환자 전체 조회 
   void findPatients(int gno) async {
     try {
-      final response = await dio.get("http://192.168.40.34:8080/patient/findall?gno=$gno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/findall?gno=$gno");
       if (response.data != null) {
         setState(() {
           pnoList.clear();
@@ -259,7 +259,7 @@ class _GuardianHomeState extends State<GuardianHome> {
   void getLastRoute(List<int> pnoList) async {
     try {
       final response = await dio.post(
-        "http://192.168.40.34:8080/location/lastroute",
+        "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/lastroute",
         data: pnoList,
         options: Options(headers: {'Content-Type': 'application/json'}),
       );

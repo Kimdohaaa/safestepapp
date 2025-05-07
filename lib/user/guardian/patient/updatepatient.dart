@@ -41,7 +41,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
   Map<String, dynamic> patientDto = {};
   void detailPatient() async{
     try{
-      final response = await dio.get("http://192.168.40.34:8080/patient/find?pno=$pno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/find?pno=$pno");
 
       print(response.data);
       setState(() {
@@ -113,7 +113,7 @@ class _UpdatePatientState extends State<UpdatePatient>{
         "relation" : selectedRelation,
         "pno" : pno
       };
-      final response = await dio.put("http://192.168.40.34:8080/patient/update",data: obj);
+      final response = await dio.put("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/update",data: obj);
 
       print("서버통신완");
       print(response.data);

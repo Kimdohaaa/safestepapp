@@ -144,7 +144,7 @@ class _EnrollLocationState extends State<EnrollLocation> {
         "plat" : plat,
         "pno" : pno
       };
-      final response = await dio.post("http://192.168.40.34:8080/location", data:  sendData);
+      final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location", data:  sendData);
 
       final data = response.data;
       print("위치 저장결과 $data");

@@ -32,7 +32,7 @@ class _GuardianState extends State<Guardian> {
         "gid" : gidController.text,
         "gpwd" : gpwdController.text
       };
-      final response = await dio.post("http://192.168.40.34:8080/guardian/login", data: obj);
+      final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/login", data: obj);
 
       dynamic data = response.data;
 
@@ -94,8 +94,8 @@ class _GuardianState extends State<Guardian> {
 
       body: Center(  // Center 위젯을 사용하여 중앙 정렬
         child: Container(
-          padding: const EdgeInsets.all(30), // 전체 안쪽 여백 50 지정
-          margin: const EdgeInsets.all(30), // 전체 바깥 여백 50 지정
+          padding: const EdgeInsets.all(10), // 전체 안쪽 여백 50 지정
+          margin: const EdgeInsets.all(10), // 전체 바깥 여백 50 지정
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,  // 세로 시작 위치로 변경
             crossAxisAlignment: CrossAxisAlignment.center,  // 가로 중앙 정렬

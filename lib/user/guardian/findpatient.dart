@@ -19,7 +19,7 @@ class _FindPatientState extends State<FindPatient>{
   // [*] 로그인된 gno 가져오기
   void findGno() async{
     try{
-      final response = await dio.get("http://192.168.40.34:8080/guardian/findgno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/findgno");
 
       print(response.data);
       if(response.data > 0){
@@ -43,7 +43,7 @@ class _FindPatientState extends State<FindPatient>{
     print("환자정보 조회 시작");
     try{
 
-      final response = await dio.get("http://192.168.40.34:8080/patient/findall?gno=$gno");
+      final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/findall?gno=$gno");
 
       if(response.data != null){
         print(response.data);
@@ -83,7 +83,7 @@ class _FindPatientState extends State<FindPatient>{
   void deletePatient(pno) async{
     try{
 
-      final response = await dio.delete("http://192.168.40.34:8080/patient?pno=$pno");
+      final response = await dio.delete("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient?pno=$pno");
 
       if(response.data == true){
         print("환자정보삭제 완료");

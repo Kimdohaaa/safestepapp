@@ -91,7 +91,7 @@ class _EnrollPatientState extends State<EnrollPatient> {
         "gno" : gno
       };
       
-      final response = await dio.post("http://192.168.40.34:8080/patient/enroll", data: obj);
+      final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/enroll", data: obj);
 
       final data = response.data;
       if(response.data > 0){
@@ -171,8 +171,8 @@ class _EnrollPatientState extends State<EnrollPatient> {
       body: Center( // Center 위젯을 사용하여 중앙 정렬
         child: Container(
 
-          padding: const EdgeInsets.all(30), // 전체 안쪽 여백 50 지정
-          margin: const EdgeInsets.all(30), // 전체 바깥 여백 50 지정
+          padding: const EdgeInsets.all(10), // 전체 안쪽 여백 50 지정
+          margin: const EdgeInsets.all(10), // 전체 바깥 여백 50 지정
           child: Column(
             children: [
               const SizedBox(height: 10,),
