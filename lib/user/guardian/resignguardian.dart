@@ -40,7 +40,7 @@ class _ResignGuardianState extends State<ResignGuardian>{
   }
 
   // [#] 회원탈퇴
-  // 250421 진행중 ~~ 탈퇴 시 gno 랑 gpwd 서버로 보내야함
+
   void deleteGuardian() async{
     try{
       String gpwd = gpwdController.text;

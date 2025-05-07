@@ -96,7 +96,7 @@ class _AdditionPatientState extends State<AdditionPatient> {
         print("성공");
         print(response.data);
         // 환자 기본 위치 지정 페이지로 이동 (등록된 환자번호 매개변수로 전달)
-        Navigator.pushNamed(context, "/enrollLocation", arguments: data);
+        Navigator.pushNamed(context, "/additionlocation", arguments: data);
 
       }else if(data == -1){
         ScaffoldMessenger.of(context).showSnackBar(

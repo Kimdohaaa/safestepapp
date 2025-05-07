@@ -17,6 +17,7 @@ import 'package:safestepapp/user/guardian/guardian.dart';
 import 'package:safestepapp/user/guardian/guardianhome.dart';
 import 'package:safestepapp/user/guardian/guardianinfo.dart';
 import 'package:safestepapp/user/guardian/guardianmain.dart';
+import 'package:safestepapp/user/guardian/patient/additionlocation.dart';
 import 'package:safestepapp/user/guardian/patient/additionpatient.dart';
 import 'package:safestepapp/user/guardian/patient/changelocation.dart';
 import 'package:safestepapp/user/guardian/patient/enrolllocation.dart';
@@ -40,7 +41,7 @@ void main() async {
   runApp(const MyApp());
 
   // 위치 추적은 앱이 완전히 실행된 후 시작
-  await LocationTrackingService().start();
+  // await LocationTrackingService().start();
 
 }
 
@@ -73,30 +74,7 @@ class LocationTrackingService {
     // bg.BackgroundGeolocation.onLocation((bg.Location location) async {
     // });
 
-    // 상태 변경 시
-    bg.BackgroundGeolocation.onMotionChange((bg.Location location) {
-      print('[motionchange] - $location');
-    });
 
-    // 위치 서비스 상태 변경 시
-    bg.BackgroundGeolocation.onProviderChange((bg.ProviderChangeEvent event) {
-      print('[providerchange] - $event');
-    });
-
-    // 설정
-    await bg.BackgroundGeolocation.ready(bg.Config(
-      desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
-      distanceFilter: 10.0,
-      stopOnTerminate: false,
-      startOnBoot: true,
-      debug: true,
-      logLevel: bg.Config.LOG_LEVEL_VERBOSE,
-      heartbeatInterval: 600,
-    )).then((state) async { // 이미 start 가 실행중인지 여부 확인
-      if (!state.enabled) {
-        await bg.BackgroundGeolocation.start();
-      }
-    });
 
     // 위치 추적 시작
     await bg.BackgroundGeolocation.start();
@@ -220,6 +198,30 @@ class LocationTrackingService {
 
       });
     });
+
+    // 상태 변경 시
+    bg.BackgroundGeolocation.onMotionChange((bg.Location location) {
+      print('[motionchange] - $location');
+    });
+
+    // 위치 서비스 상태 변경 시
+    bg.BackgroundGeolocation.onProviderChange((bg.ProviderChangeEvent event) {
+      print('[providerchange] - $event');
+    });
+    // 설정
+    await bg.BackgroundGeolocation.ready(bg.Config(
+      desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+      distanceFilter: 10.0,
+      stopOnTerminate: false,
+      startOnBoot: true,
+      debug: true,
+      logLevel: bg.Config.LOG_LEVEL_VERBOSE,
+      heartbeatInterval: 60,
+    )).then((state) async { // 이미 start 가 실행중인지 여부 확인
+      if (!state.enabled) {
+        await bg.BackgroundGeolocation.start();
+      }
+    });
   }
 }
 
@@ -233,30 +235,45 @@ Future<void> _getFcmTokenAndSend() async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
     print("********FCM 토큰 발급됨 : $fcmToken");
 
-    if (fcmToken != null) {
-      final prefs = await SharedPreferences.getInstance();
-      final gno = prefs.getString("gno") ?? "1"; // 테스트용 기본값
-        // FCM 토큰 서버로 전송
-      final response = await dio.post(
-        "http://192.168.40.34:8080/location/savefcmtoken",
-        queryParameters: {
-          "gno": gno,
-          "fcmToken": fcmToken,
-        },
-      );
-        print("FCM 토큰 서버로 전송 성공: ${response.data}");
-
-    }
+    // if (fcmToken != null) {
+    //   final prefs = await SharedPreferences.getInstance();
+    //   final gno = prefs.getString("gno") ?? "1"; // 테스트용 기본값
+    //     // FCM 토큰 서버로 전송
+    //   final response = await dio.post(
+    //     "http://192.168.40.34:8080/location/savefcmtoken",
+    //     queryParameters: {
+    //       "gno": gno,
+    //       "fcmToken": fcmToken,
+    //     },
+    //   );
+    //     print("FCM 토큰 서버로 전송 성공: ${response.data}");
+    //
+    // }
   } catch (e) {
     print(" FCM 토큰 전송 실패: $e");
   }
 }
 
-
-// 라우터 클래스
-class MyApp extends StatelessWidget {
-
+class MyApp extends StatefulWidget{
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _MyAppState();
+  }
+}
+// 라우터 클래스
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // 위치 추적 시작
+    startLocationTracking();
+  }
+
+  void startLocationTracking() async {
+    await LocationTrackingService().start();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +296,7 @@ class MyApp extends StatelessWidget {
         "/enrollLocation" : (context) => const EnrollLocation(),
         "/changeLocation" : (context) => const ChangeLocation(),
         "/authentication" : (context) => const Authentication(),
+        "/additionlocation" : (context) => const AdditionLocation(),
       },
     );
   }

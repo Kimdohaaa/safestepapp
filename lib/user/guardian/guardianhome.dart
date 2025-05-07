@@ -218,6 +218,7 @@ Future<void> _initialize() async {
     clientId: '0i2o3ztm19', // 네이버 클라이언트 ID
     onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
   );
+  print("초기화 완료");
 }
 
 // 지도 화면 (환자 위치 마커 포함)
@@ -234,6 +235,8 @@ class _NaverMapAppState extends State<NaverMapApp> {
   late NaverMapController _mapController;
 
   Dio dio = Dio();
+
+  final defaultPosition = NLatLng(37.5665, 126.9780); // 디폴트 좌표
 
   @override
   Widget build(BuildContext context) {
@@ -362,12 +365,13 @@ class _GuardianHomeState extends State<GuardianHome> {
       print("위치 조회 오류: $e");
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: NaverMapApp(patientsList: patientsList), // 환자 위치 마커 포함 지도
+      body: patientsList.isEmpty
+          ? Center(child: Text("위치를 조회중인 환자가 없습니다")) // 환자 위치 정보가 없으면 문구 출력
+          : NaverMapApp(patientsList: patientsList), // 환자 위치 마커 포함 지도
     );
   }
 }
