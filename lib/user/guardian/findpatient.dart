@@ -117,10 +117,11 @@ class _FindPatientState extends State<FindPatient>{
                         borderRadius: BorderRadius.circular(8), // 원하는 만큼 라운딩 (선택사항)
                       ),
                       child: ListTile(
-                        title: Text("이름 : ${patient['pname']}"),
+                        title: Text("환자번호 : ${patient['pno']}"),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start, // 텍스트 왼쪽 정렬
                           children: [
+                            Text("이름 : ${patient['pname']}"),
                             Text("주민등록번호 : ${patient['pnumber']}"),
                             Text("성별 : ${patient['pgender'] == true ? '여자' : patient['pgender'] == false ? '남자' : '정보 없음'}"),
                             Text("나이 : ${patient['page']}"),
