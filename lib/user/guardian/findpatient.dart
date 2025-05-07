@@ -79,87 +79,23 @@ class _FindPatientState extends State<FindPatient>{
     }
   }
 
-  
-  // [#] 환자정보 삭제
-  void deletePatient(int pno) async {
-    try {
-      final String? enteredPassword = await _showPasswordDialog(context);
+  // [#] 환자 정보 삭제
+  void deletePatient(pno) async{
+    try{
 
-      if (enteredPassword == null) {
-        // 사용자가 다이얼로그를 취소한 경우
-        return;
+      final response = await dio.delete("http://192.168.40.34:8080/patient?pno=$pno");
+
+      if(response.data == true){
+        print("환자정보삭제 완료");
+        setState(() {
+          findPatients(gno);
+        });
+      }else{
+        print("환자정보삭제 실패");
       }
-
-      // 서버에 비밀번호 확인 
-      final response = await dio.delete(
-        "http://192.168.40.34:8080/guardian?gno=$gno&gpwd=$enteredPassword",
-      );
-
-      if (response.data == true) {
-        // 비밀번호 검증 성공 -> 환자 삭제 진행
-        final deleteResponse = await dio.delete(
-          "http://192.168.40.34:8080/patient?pno=$pno",
-        );
-
-        if (deleteResponse.data == true) {
-          print("환자정보 삭제 완료");
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("환자 정보가 삭제되었습니다.")),
-          );
-          setState(() {
-            findPatients(gno); // 환자 목록 갱신
-          });
-        } else {
-          print("환자정보 삭제 실패");
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("환자 정보 삭제에 실패했습니다.")),
-          );
-        }
-      } else {
-        // 비밀번호 틀림
-        print("비밀번호 틀림");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("비밀번호가 일치하지 않습니다.")),
-        );
-      }
-    } catch (e) {
-      print("오류 발생: $e");
-
+    }catch(e){
+      print(e);
     }
-  }
-
-  // 환자 정보 삭제 시 비밀번호 검증
-  Future<String?> _showPasswordDialog(BuildContext context) async {
-    TextEditingController passwordController = TextEditingController();
-
-    return await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('비밀번호 입력'),
-          content: TextField(
-            controller: passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: '비밀번호',
-              hintText: '비밀번호를 입력해주세요',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(null),
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(passwordController.text);
-              },
-              child: const Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
