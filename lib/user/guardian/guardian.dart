@@ -1,5 +1,8 @@
 // 로그인 파일 //
+import 'dart:math';
+
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +24,7 @@ class _GuardianState extends State<Guardian> {
   // [*] DIO
   Dio dio = Dio();
 
+  int gno = 0;
   // [#] 로그인 
   void login() async{
     print("로그인버튼");
@@ -45,6 +49,18 @@ class _GuardianState extends State<Guardian> {
         await prefs.setString("token", data);
 
         // gno 전역변수로 저장
+        try{
+          final loginGno = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/guardian/findgno");
+          print("로그인된 gno 확인 : $loginGno.data");
+          gno = loginGno.data;
+
+          if(gno > 0){
+            _getFcmTokenAndSend();
+          }
+        }catch(e){
+
+          print(e);
+        }
 
       }else{
         print("로그인 실패");
@@ -57,6 +73,34 @@ class _GuardianState extends State<Guardian> {
       print(e);
     }
   }
+  // FCM 토큰을 발급받아서 pno 와 함께 서버로 보내는 함수 (나중에 보호자 화면 들어갈 때 로 위치 수정하기)
+  Future<void> _getFcmTokenAndSend() async {
+    try {
+      print("********FCM 토큰 발급 시작");
+      Dio dio = Dio();
+      // FCM 토큰 발급
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      print("********FCM 토큰 발급됨 : $fcmToken");
+
+      if (fcmToken != null) {
+
+        print("gno 확인 : $gno");
+        // FCM 토큰 서버로 전송
+        final response = await dio.post(
+          "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/savefcmtoken",
+          queryParameters: {
+            "gno": gno,
+            "fcmToken": fcmToken,
+          },
+        );
+        print("FCM 토큰 서버로 전송 성공: ${response.data}");
+
+      }
+    } catch (e) {
+      print(" FCM 토큰 전송 실패: $e");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

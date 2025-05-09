@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart' as geolocator; // Alias for geolocator
 // Alias for geolocator_android's AndroidSettings
 
@@ -29,14 +31,72 @@ import 'package:safestepapp/user/patient/authentication.dart';
 import 'package:safestepapp/user/patient/patientsetting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+Future<void> _initializeFCM() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // 포그라운드에서 알림 수신 시
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print("포그라운드 알림: ${message.notification?.title}, ${message.notification?.body}");
+    _showNotification(message.notification?.title, message.notification?.body);
+  });
+
+
+  // 백그라운드에서 알림 클릭 시
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print("백그라운드 알림 클릭: ${message.notification?.title}, ${message.notification?.body}");
+    // 알림을 클릭한 후 처리 로직 추가하기
+    _handleNotificationTap(message);
+  });
+
+  // 앱이 처음 시작할 때 알림 클릭 시 (앱이 종료된 상태에서 알림 클릭)
+  RemoteMessage? initialMessage = await messaging.getInitialMessage();
+  if (initialMessage != null) {
+    print("앱 종료 상태에서 알림 클릭: ${initialMessage.notification?.title}, ${initialMessage.notification?.body}");
+    _handleNotificationTap(initialMessage);
+  }
+}
+
+// 알림 출력 구현
+void _showNotification(String? title, String? body) {
+  final context = navigatorKey.currentState?.overlay?.context;
+  if (context == null) return;
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title ?? '알림'),
+        content: Text(body ?? '내용이 없습니다.'),
+        actions: [
+          TextButton(
+            child: Text("확인"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+void _handleNotificationTap(RemoteMessage message) {
+  // 알림 클릭 시 이동할 페이지나 처리할 로직 추가하기
+  print("알림 클릭 후 처리: ${message.notification?.title}");
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
   await _initialize(); // NaverMap
-  await _getFcmTokenAndSend(); // FCM 토큰 전송
+  //await _getFcmTokenAndSend(); // FCM 토큰 전송
+  await _initializeFCM();  // FCM 리스너 설정
+
   // 실제 사용할 메인 위젯
   runApp(const MyApp());
 
@@ -162,24 +222,43 @@ class LocationTrackingService {
                 routeList = findRoute.data;
                 print("이탈 경로: $routeList");
 
-                // 서버에서 해당 환자 보호자의 토큰 꺼내와서 해당 토큰에 푸시알림전송
 
                 // 서버에서 해당 환자 보호자의 토큰 꺼내오기
                 try{
                   try {
+                    print("토큰 반환받기");
+
                     final findToken = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/findfcmtoken?pno=$pno");
                     final fcmToken = findToken.data;
 
-                    if (fcmToken != null) {
+                    print("토큰 확인 : $fcmToken");
+
+                    print("pno 중간 확인 $pno");
+                    // if (fcmToken != null ) {
                       print("토큰 전송 시작");
-                      await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/fcmtoken/sendNotification", data: {
-                        "token": fcmToken,
-                        "title": "위험 알림",
-                        "body": "환자가 안전구역을 벗어났습니다!" // 환자이름 빼와서 같이 보내기
-                      });
+                      try {
+                        final response = await dio.post(
+                          "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/fcmmsg/sendNotification",
+                          data: jsonEncode({
+                            "targetToken": fcmToken,
+                            "title": "위험 알림",
+                            "body": "환자가 안전구역을 벗어났습니다!"
+                          }),
+                          options: Options(
+                              headers: {
+                                "Content-Type": "application/json"
+                              }
+                          ),
+                        );
+
+                        print("응답 결과: ${response.data}");
+
+                      }catch(e){
+                        print("알림 푸시 실패 $e");
+                      }
 
 
-                    }
+                    //}
                   } catch (e) {
                     print("푸시 전송 실패: $e");
                   }
@@ -229,33 +308,33 @@ class LocationTrackingService {
 }
 
 
-// FCM 토큰을 발급받아서 pno 와 함께 서버로 보내는 함수 (나중에 보호자 화면 들어갈 때 로 위치 수정하기)
-Future<void> _getFcmTokenAndSend() async {
-  try {
-    print("********FCM 토큰 발급 시작");
-    Dio dio = Dio();
-    // FCM 토큰 발급
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    print("********FCM 토큰 발급됨 : $fcmToken");
-
-    if (fcmToken != null) {
-      final prefs = await SharedPreferences.getInstance();
-      final gno = prefs.getString("gno") ?? "1"; // 테스트용 기본값
-        // FCM 토큰 서버로 전송
-      final response = await dio.post(
-        "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/savefcmtoken",
-        queryParameters: {
-          "gno": gno,
-          "fcmToken": fcmToken,
-        },
-      );
-        print("FCM 토큰 서버로 전송 성공: ${response.data}");
-
-    }
-  } catch (e) {
-    print(" FCM 토큰 전송 실패: $e");
-  }
-}
+// // FCM 토큰을 발급받아서 pno 와 함께 서버로 보내는 함수 (나중에 보호자 화면 들어갈 때 로 위치 수정하기)
+// Future<void> _getFcmTokenAndSend() async {
+//   try {
+//     print("********FCM 토큰 발급 시작");
+//     Dio dio = Dio();
+//     // FCM 토큰 발급
+//     final fcmToken = await FirebaseMessaging.instance.getToken();
+//     print("********FCM 토큰 발급됨 : $fcmToken");
+//
+//     if (fcmToken != null) {
+//       final prefs = await SharedPreferences.getInstance();
+//       final gno = prefs.getString("gno") ?? "1"; // 테스트용 기본값
+//         // FCM 토큰 서버로 전송
+//       final response = await dio.post(
+//         "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location/savefcmtoken",
+//         queryParameters: {
+//           "gno": gno,
+//           "fcmToken": fcmToken,
+//         },
+//       );
+//         print("FCM 토큰 서버로 전송 성공: ${response.data}");
+//
+//     }
+//   } catch (e) {
+//     print(" FCM 토큰 전송 실패: $e");
+//   }
+// }
 
 class MyApp extends StatefulWidget{
   const MyApp({Key? key}) : super(key: key);
@@ -281,6 +360,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       initialRoute: "/", // 나중에 "/" 로 바꾸기
       routes: {
         "/" : (context) => const Home(),
