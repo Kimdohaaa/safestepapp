@@ -37,9 +37,69 @@ Future<void> _initializeFCM() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   // 포그라운드에서 알림 수신 시
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("포그라운드 알림: ${message.notification?.title}, ${message.notification?.body}");
-    _showNotification(message.notification?.title, message.notification?.body);
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    print("포그라운드 알림 수신");
+    print("title: ${message.notification?.title}");
+    print("body: ${message.notification?.body}");
+    print("전체 메시지: ${message.data}"); // 여기가 핵심
+
+    // 환자 정보를 담을 변수 선언
+    Map<String, dynamic>? patientDto = {};
+    // 환자 번호를 담을 변수 선언
+    int? pno = 0;
+
+    // pno 호가인
+    if (message.data.containsKey("pno")) {
+      pno = int.parse(message.data["pno"]);
+      print("FCM에서 받은 pno: $pno");
+
+      // [*] 로그인된 gno 가져오기
+      final prefs = await SharedPreferences.getInstance();
+      final gno = prefs.getString("gno");
+
+      // gno null 확인
+      if (gno == null) {
+        print("gno 없음");
+        return;
+      }
+
+      // [*] 로그인된 gno 가 관리 중인 환자 리스트 조회
+      final patientsList = await findPatientList(int.parse(gno));
+
+      // 환자 리스트 null 확인
+      if (patientsList == null || patientsList.isEmpty) {
+        print("환자 리스트 없음");
+        return;
+      }
+
+      // [*] FCM 알림으로 온 pno 가 현재 로그인 중인 gno 가 관리 중인 pno 이닞 확인
+      final matchingPatient = patientsList.firstWhere(
+            (patient) => patient['pno'].toString() == pno.toString(),
+        orElse: () => null,
+      );
+
+      // [*] 관리 중인 환자가 아니라면 알림 출력 X
+      if (matchingPatient == null) {
+        print("관리 중인 환자 아님, 알림 무시");
+        return;
+      }
+
+      // [*] 관리 중인 환자 일 시 환자 정보 조회
+      patientDto = await findPatient(pno);
+      print("환자 정보 조회 결과: $patientDto");
+
+      // [*] 환자 정보가 조회될 경우 알림 출력
+      if (patientDto != null && patientDto.isNotEmpty) {
+        _showNotification(
+          message.notification?.title,
+          message.notification?.body,
+          patientDto['pname'],
+          patientDto['pno'],
+        );
+      }
+    } else {
+      print("pno 없음");
+    }
   });
 
 
@@ -58,8 +118,8 @@ Future<void> _initializeFCM() async {
   }
 }
 
-// 알림 출력 구현
-void _showNotification(String? title, String? body) {
+// [#] 알림 출력 구현
+void _showNotification(String? title, String? body, String? pname , int? pno) {
   final context = navigatorKey.currentState?.overlay?.context;
   if (context == null) return;
 
@@ -68,8 +128,8 @@ void _showNotification(String? title, String? body) {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(title ?? '알림'),
-        content: Text(body ?? '내용이 없습니다.'),
+        title: Text(title ?? '긴급알림'),
+        content: Text("$pname (환자번호 : $pno) 님 $body" ?? '내용이 없습니다.'),
         actions: [
           TextButton(
             child: Text("확인"),
@@ -88,6 +148,47 @@ void _handleNotificationTap(RemoteMessage message) {
   // 알림 클릭 시 이동할 페이지나 처리할 로직 추가하기
   print("알림 클릭 후 처리: ${message.notification?.title}");
 }
+
+// [#] 환자 정보 조회 함수
+Future<Map<String, dynamic>?> findPatient(int pno) async {
+  Dio dio = Dio();
+  try {
+    final response = await dio.get(
+      "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/find?pno=$pno",
+    );
+
+    print(response.data);
+    return response.data;
+  } catch (e) {
+    print("환자 정보 조회 실패 $e");
+    return null;
+  }
+}
+
+// [#] 특정 보호자의 전체 환자 조회
+Future<List<dynamic>?> findPatientList(int gno) async {
+  print("환자정보 조회 시작");
+  Dio dio = Dio();
+
+  try {
+    final response = await dio.get(
+        "http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/findall?gno=$gno"
+    );
+
+    // 응답이 null이 아니고, 데이터가 존재하는지 확인
+    if (response.data != null && response.data.isNotEmpty) {
+      print("환자 목록 조회 성공: ${response.data}");
+      return response.data;  // 환자 목록 반환
+    } else {
+      print("환자 목록이 비어 있습니다.");
+      return [];
+    }
+  } catch (e) {
+    print("환자 정보 조회 실패: $e");
+    return null;  // 오류 발생 시 null 반환
+  }
+}
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -242,7 +343,8 @@ class LocationTrackingService {
                           data: jsonEncode({
                             "targetToken": fcmToken,
                             "title": "위험 알림",
-                            "body": "환자가 안전구역을 벗어났습니다!"
+                            "body": "환자가 안전구역을 벗어났습니다!",
+                            "pno" : pno
                           }),
                           options: Options(
                               headers: {
