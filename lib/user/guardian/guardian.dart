@@ -17,6 +17,22 @@ class Guardian extends StatefulWidget{
 
 
 class _GuardianState extends State<Guardian> {
+
+  @override
+  void initState() {
+    super.initState();
+    _clearStoredLoginData(); // SharedPreferences 초기화
+  }
+
+  // SharedPreferences에서 gno와 token 삭제
+  Future<void> _clearStoredLoginData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("gno");
+    await prefs.remove("token");
+    print("초기화: gno, token 삭제됨");
+  }
+
+
   // [*] TextController
   TextEditingController gidController = TextEditingController();
   TextEditingController gpwdController = TextEditingController();

@@ -63,9 +63,16 @@ class _GuardianMainState extends State<GuardianMain> {
         
         print(response.data);
         print("로그아웃 성공");
+
+        // SharedPreferences에서 gno와 token 삭제
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove("gno");
+        await prefs.remove("token");
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("로그아웃되었습니다.")),
         );
+
       }
     }catch(e){
       print(e);

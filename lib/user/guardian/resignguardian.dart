@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:safestepapp/main/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ResignGuardian extends StatefulWidget{
   const ResignGuardian({super.key});
@@ -40,7 +41,6 @@ class _ResignGuardianState extends State<ResignGuardian>{
   }
 
   // [#] 회원탈퇴
-
   void deleteGuardian() async{
     try{
       String gpwd = gpwdController.text;
@@ -52,6 +52,15 @@ class _ResignGuardianState extends State<ResignGuardian>{
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("회원탈퇴처리 되었습니다.")),
           );
+
+          // SharedPreferences에서 gno와 token 삭제
+          Future<void> _clearStoredLoginData() async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove("gno");
+            await prefs.remove("token");
+            print("초기화: gno, token 삭제됨");
+          }
+
           // 메인페이지로 이동 시키기
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const Home())
