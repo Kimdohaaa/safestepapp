@@ -104,10 +104,66 @@ Future<void> _initializeFCM() async {
 
 
   // 백그라운드에서 알림 클릭 시
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async{
     print("백그라운드 알림 클릭: ${message.notification?.title}, ${message.notification?.body}");
     // 알림을 클릭한 후 처리 로직 추가하기
-    _handleNotificationTap(message);
+    // 환자 정보를 담을 변수 선언
+    Map<String, dynamic>? patientDto = {};
+    // 환자 번호를 담을 변수 선언
+    int? pno = 0;
+
+    // pno 호가인
+    if (message.data.containsKey("pno")) {
+      pno = int.parse(message.data["pno"]);
+      print("FCM에서 받은 pno: $pno");
+
+      // [*] 로그인된 gno 가져오기
+      final prefs = await SharedPreferences.getInstance();
+      final gno = prefs.getString("gno");
+
+      // gno null 확인
+      if (gno == null) {
+        print("gno 없음");
+        return;
+      }
+
+      // [*] 로그인된 gno 가 관리 중인 환자 리스트 조회
+      final patientsList = await findPatientList(int.parse(gno));
+
+      // 환자 리스트 null 확인
+      if (patientsList == null || patientsList.isEmpty) {
+        print("환자 리스트 없음");
+        return;
+      }
+
+      // [*] FCM 알림으로 온 pno 가 현재 로그인 중인 gno 가 관리 중인 pno 이닞 확인
+      final matchingPatient = patientsList.firstWhere(
+            (patient) => patient['pno'].toString() == pno.toString(),
+        orElse: () => null,
+      );
+
+      // [*] 관리 중인 환자가 아니라면 알림 출력 X
+      if (matchingPatient == null) {
+        print("관리 중인 환자 아님, 알림 무시");
+        return;
+      }
+
+      // [*] 관리 중인 환자 일 시 환자 정보 조회
+      patientDto = await findPatient(pno);
+      print("환자 정보 조회 결과: $patientDto");
+
+      // [*] 환자 정보가 조회될 경우 알림 출력
+      if (patientDto != null && patientDto.isNotEmpty) {
+        _showNotification(
+          message.notification?.title,
+          message.notification?.body,
+          patientDto['pname'],
+          patientDto['pno'],
+        );
+      }
+    } else {
+      print("pno 없음");
+    }
   });
 
   // 앱이 처음 시작할 때 알림 클릭 시 (앱이 종료된 상태에서 알림 클릭)
@@ -129,7 +185,7 @@ void _showNotification(String? title, String? body, String? pname , int? pno) {
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title ?? '긴급알림'),
-        content: Text("$pname (환자번호 : $pno) 님 $body" ?? '내용이 없습니다.'),
+        content: Text("$pname (환자번호 : $pno) 님이 $body" ?? '내용이 없습니다.'),
         actions: [
           TextButton(
             child: Text("확인"),
@@ -285,21 +341,32 @@ class LocationTrackingService {
 
         print("1. 위치조회 권환 확인 환자번호 : $pno 권한상태 : $isGranted 와 $findState");
 
-        // 위치 중복 체크
-        if (_prevLat != null && _prevLon != null) {
-          final distance = geolocator.Geolocator.distanceBetween(
-            _prevLat!, _prevLon!, plat!, plon!,
-          );
-
-          if (distance < 5) {
-            print("위치 중복(${distance.toStringAsFixed(2)}m) → 서버 전송 생략");
-            return;
-          }
-        }
+        // // 위치 중복 체크
+        // if (_prevLat != null && _prevLon != null) {
+        //   final distance = geolocator.Geolocator.distanceBetween(
+        //     _prevLat!, _prevLon!, plat!, plon!,
+        //   );
+        //
+        //   if (distance < 5) {
+        //     print("위치 중복(${distance.toStringAsFixed(2)}m) → 서버 전송 생략");
+        //     return;
+        //   }
+        // }
         // [5] 서버 백으로 전송
         print(">>>>>>>>>>>>>>>>위치전송 시작");
         try {
 
+          // 위치 중복 체크
+          if (_prevLat != null && _prevLon != null) {
+            final distance = geolocator.Geolocator.distanceBetween(
+              _prevLat!, _prevLon!, plat!, plon!,
+            );
+
+            if (distance < 5) {
+              print("위치 중복(${distance.toStringAsFixed(2)}m) → 서버 전송 생략");
+              return;
+            }
+          }
           if(pno != '' && isGranted == true && findState == true){
             final obj = {
               "plon" : plon,
@@ -343,7 +410,7 @@ class LocationTrackingService {
                           data: jsonEncode({
                             "targetToken": fcmToken,
                             "title": "위험 알림",
-                            "body": "환자가 안전구역을 벗어났습니다!",
+                            "body": "안전구역을 벗어났습니다!",
                             "pno" : pno
                           }),
                           options: Options(
@@ -400,7 +467,7 @@ class LocationTrackingService {
       startOnBoot: true,
       debug: true,
       logLevel: bg.Config.LOG_LEVEL_VERBOSE,
-      heartbeatInterval: 60,
+      heartbeatInterval: 30,
     )).then((state) async { // 이미 start 가 실행중인지 여부 확인
       if (!state.enabled) {
         await bg.BackgroundGeolocation.start();

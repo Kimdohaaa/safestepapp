@@ -77,47 +77,53 @@ class _ResignGuardianState extends State<ResignGuardian>{
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(30),
-          margin: const EdgeInsets.all(30),
-          child: Column(
-            children: [
-              const SizedBox(height: 53,),
-              const Text("회원탈퇴페이지입니다."),
 
-              TextField(
-                controller:  gpwdController,
-                decoration: const InputDecoration(
-                    labelText: '비밀번호',
-                    border: OutlineInputBorder()),
+      body: SafeArea(  // SafeArea로 감쌈
+        child: SingleChildScrollView(  // SingleChildScrollView로 감쌈
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(30),
+              margin: const EdgeInsets.all(30),
+              child: Column(
+                children: [
+                  const SizedBox(height: 53),
+                  const Text("회원탈퇴페이지입니다."),
+
+                  TextField(
+                    controller: gpwdController,
+                    decoration: const InputDecoration(
+                        labelText: '비밀번호',
+                        border: OutlineInputBorder()),
+                  ),
+
+                  const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
+
+                  ElevatedButton(
+                    onPressed: deleteGuardian, // 버튼 클릭 시 할 작업
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // 버튼 색상 파란색
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero, // 네모 모양으로 설정
+                      ),
+                      minimumSize: const Size(130, 50), // 버튼 크기 지정
+                    ),
+                    child: const Text(
+                      "회원탈퇴",
+                      style: TextStyle(
+                        color: Colors.white, // 버튼 텍스트 색상
+                        fontSize: 16, // 텍스트 크기
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                ],
               ),
-
-              const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
-
-              ElevatedButton(
-                onPressed: deleteGuardian, // 버튼 클릭 시 할 작업
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // 버튼 색상 파란색
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // 네모 모양으로 설정
-                  ),
-                  minimumSize: const Size(130, 50), // 버튼 크기 지정
-                ),
-                child: const Text(
-                  "회원탈퇴",
-                  style: TextStyle(
-                    color: Colors.white, // 버튼 텍스트 색상
-                    fontSize: 16, // 텍스트 크기
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+
+
 }

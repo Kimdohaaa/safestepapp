@@ -168,150 +168,153 @@ class _EnrollPatientState extends State<EnrollPatient> {
           ),
         ),
       ),
-      body: Center( // Center 위젯을 사용하여 중앙 정렬
-        child: Container(
+      body: SafeArea( // SafeArea로 감쌈
+        child: SingleChildScrollView( // SingleChildScrollView 추가
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(10), // 전체 안쪽 여백 10 지정
+              margin: const EdgeInsets.all(10), // 전체 바깥 여백 10 지정
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  const Text("환자 등록 페이지 입니다."),
 
-          padding: const EdgeInsets.all(10), // 전체 안쪽 여백 50 지정
-          margin: const EdgeInsets.all(10), // 전체 바깥 여백 50 지정
-          child: Column(
-            children: [
-              const SizedBox(height: 10,),
-              // 로그인 텍스트
-              const Text("환자 등록 페이지 입니다."),
+                  const SizedBox(height: 30), // 텍스트와 TextField 사이의 여백
 
-              const SizedBox(height: 30), // 텍스트와 TextField 사이의 여백
-
-              TextField(
-                controller: pnameController,
-                decoration: const InputDecoration(
-                    labelText: '환자 이름',
-                    border: OutlineInputBorder()),
-              ),
-
-              const SizedBox(height: 10),
-
-              TextField(
-                controller: pnumberController,
-                decoration: const InputDecoration(
-                    labelText: '환자 주민등록번호',
-                    hintText: "- 없이 13자리 입력",
-                    border: OutlineInputBorder()),
-              ),
-              const SizedBox(height: 10),
-
-              TextField(
-                controller: pageController,
-                decoration: const InputDecoration(
-                    labelText: '환자 나이',
-                    hintText: "0 이상의 숫자만 입력",
-                    border: OutlineInputBorder()),
-              ),
-
-              const SizedBox(height: 10),
-
-              TextField(
-                controller: pphoneController,
-                decoration: const InputDecoration(
-                    labelText: '환자 전화번호',
-                    hintText: '- 없이 11 자리 입력',
-                    border: OutlineInputBorder()),
-              ),
-
-              const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: selectedGender,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedGender = newValue;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: '환자 성별',
-                  border: OutlineInputBorder(),
-                ),
-                items: ['남자', '여자']
-                    .map((gender) => DropdownMenuItem(
-                  value: gender,
-                  child: SizedBox(
-                    width: 100, // 셀렉트 항목 너비 제한
-                    child: Text(gender),
+                  TextField(
+                    controller: pnameController,
+                    decoration: const InputDecoration(
+                      labelText: '환자 이름',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ))
-                    .toList(),
-              ),
-              const SizedBox(height: 10),
 
+                  const SizedBox(height: 10),
 
-              DropdownButtonFormField<String>(
-                value: selectedGrade,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedGrade = newValue;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: '치매 등급',
-                  border: OutlineInputBorder(),
-                ),
-                items: ['1등급', '2등급', '3등급', '4등급', '5등급', '인지지원등급']
-                    .map((grade) => DropdownMenuItem(
-                  value: grade,
-                  child: SizedBox(
-                    width: 100, // 셀렉트 박스 너비 제한
-                    child: Text(grade),
+                  TextField(
+                    controller: pnumberController,
+                    decoration: const InputDecoration(
+                      labelText: '환자 주민등록번호',
+                      hintText: "- 없이 13자리 입력",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ))
-                    .toList(),
-              ),
-              const SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-
-              DropdownButtonFormField<String>(
-                value: selectedRelation,
-                onChanged: (value) {
-                  setState(() {
-                    selectedRelation = value;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: '환자와의 관계',
-                  border: OutlineInputBorder(),
-                ),
-                items: ['자녀', '배우자', '기타'].map((relation) {
-                  return DropdownMenuItem<String>(
-                    value: relation,
-                    child: Text(relation),
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
-
-
-              ElevatedButton(
-                onPressed: enroll, // 버튼 클릭 시 할 작업
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // 버튼 색상 파란색
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // 네모 모양으로 설정
+                  TextField(
+                    controller: pageController,
+                    decoration: const InputDecoration(
+                      labelText: '환자 나이',
+                      hintText: "0 이상의 숫자만 입력",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  minimumSize: const Size(130, 50), // 버튼 크기 지정
-                ),
-                child: const Text(
-                  "환자등록",
-                  style: TextStyle(
-                    color: Colors.white, // 버튼 텍스트 색상
-                    fontSize: 16, // 텍스트 크기
-                    fontWeight: FontWeight.bold,
+
+                  const SizedBox(height: 10),
+
+                  TextField(
+                    controller: pphoneController,
+                    decoration: const InputDecoration(
+                      labelText: '환자 전화번호',
+                      hintText: '- 없이 11 자리 입력',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-              )
 
+                  const SizedBox(height: 10),
 
-            ],
+                  DropdownButtonFormField<String>(
+                    value: selectedGender,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedGender = newValue;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: '환자 성별',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: ['남자', '여자']
+                        .map((gender) => DropdownMenuItem(
+                      value: gender,
+                      child: SizedBox(
+                        width: 100, // 셀렉트 항목 너비 제한
+                        child: Text(gender),
+                      ),
+                    ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 10),
+
+                  DropdownButtonFormField<String>(
+                    value: selectedGrade,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedGrade = newValue;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: '치매 등급',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: ['1등급', '2등급', '3등급', '4등급', '5등급', '인지지원등급']
+                        .map((grade) => DropdownMenuItem(
+                      value: grade,
+                      child: SizedBox(
+                        width: 100, // 셀렉트 박스 너비 제한
+                        child: Text(grade),
+                      ),
+                    ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 10),
+
+                  DropdownButtonFormField<String>(
+                    value: selectedRelation,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRelation = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: '환자와의 관계',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: ['자녀', '배우자', '기타'].map((relation) {
+                      return DropdownMenuItem<String>(
+                        value: relation,
+                        child: Text(relation),
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
+
+                  ElevatedButton(
+                    onPressed: enroll, // 버튼 클릭 시 할 작업
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue, // 버튼 색상 파란색
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero, // 네모 모양으로 설정
+                      ),
+                      minimumSize: const Size(130, 50), // 버튼 크기 지정
+                    ),
+                    child: const Text(
+                      "환자등록",
+                      style: TextStyle(
+                        color: Colors.white, // 버튼 텍스트 색상
+                        fontSize: 16, // 텍스트 크기
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
+
 }

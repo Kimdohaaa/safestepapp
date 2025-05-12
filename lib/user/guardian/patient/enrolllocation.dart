@@ -139,11 +139,14 @@ class _EnrollLocationState extends State<EnrollLocation> {
   // [#] 사용자가 선택한 위도와 경도를 서버로 보내기
   void sendLocation() async{
     try{
+      print("환자번호확인 ${pno}, ${plon}, ${plat}");
       final sendData = {
         "plon" : plon,
         "plat" : plat,
         "pno" : pno
       };
+      print("보내는 데이터: $sendData");
+
       final response = await dio.post("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/location", data:  sendData);
 
       final data = response.data;

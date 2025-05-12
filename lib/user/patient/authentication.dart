@@ -76,61 +76,63 @@ class _AuthenticationState extends State< Authentication>{
         ),
       ),
 
-      body: Column(
-        children: [
-          Container(
-            height: 1, // 가로줄의 두께
-            color: Colors.grey[300], // 가로줄 색상
-          ),
-
-          // 상단 여백과 이미지
-          const SizedBox(height: 59.5),
-          Image.asset(
-            'assets/images/SafeStep_logo.PNG', // 여기에 이미지 경로를 넣어주세요
-            width: 200,
-            height: 200, // 이미지 크기 조정
-          ),
-
-          const SizedBox(height: 35),
-          // 버튼 Row
-          const Text("전화번호 인증 페이지 입니다."),
-
-          const SizedBox(height: 15),
-
-          TextField(
-            controller: pphoneController,
-            decoration: const InputDecoration(
-                labelText: '환자 휴대폰번호',
-                border: OutlineInputBorder()),
-          ),
-          const SizedBox(height: 10),
-
-
-
-          const SizedBox(height: 15),  // 로그인 버튼과 텍스트 사이에 여백 추가
-
-
-          ElevatedButton(
-            onPressed: authentication, // 버튼 클릭 시 할 작업
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue, // 버튼 색상 파란색
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero, // 네모 모양으로 설정
+      body: SafeArea( // SafeArea로 감쌈
+        child: SingleChildScrollView( // SingleChildScrollView로 감쌈
+          child: Column(
+            children: [
+              Container(
+                height: 1, // 가로줄의 두께
+                color: Colors.grey[300], // 가로줄 색상
               ),
-              minimumSize: const Size(130, 50), // 버튼 크기 지정
-            ),
-            child: const Text(
-              "번호확인",
-              style: TextStyle(
-                color: Colors.white, // 버튼 텍스트 색상
-                fontSize: 16, // 텍스트 크기
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
 
-        ],
-      ) ,
+              // 상단 여백과 이미지
+              const SizedBox(height: 59.5),
+              Image.asset(
+                'assets/images/SafeStep_logo.PNG', // 여기에 이미지 경로를 넣어주세요
+                width: 200,
+                height: 200, // 이미지 크기 조정
+              ),
+
+              const SizedBox(height: 35),
+              // 버튼 Row
+              const Text("전화번호 인증 페이지 입니다."),
+
+              const SizedBox(height: 15),
+
+              TextField(
+                controller: pphoneController,
+                decoration: const InputDecoration(
+                  labelText: '환자 휴대폰번호',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              const SizedBox(height: 15), // 로그인 버튼과 텍스트 사이에 여백 추가
+
+              ElevatedButton(
+                onPressed: authentication, // 버튼 클릭 시 할 작업
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue, // 버튼 색상 파란색
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero, // 네모 모양으로 설정
+                  ),
+                  minimumSize: const Size(130, 50), // 버튼 크기 지정
+                ),
+                child: const Text(
+                  "번호확인",
+                  style: TextStyle(
+                    color: Colors.white, // 버튼 텍스트 색상
+                    fontSize: 16, // 텍스트 크기
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
+
 }
