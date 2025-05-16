@@ -1,16 +1,24 @@
-# safestepapp
+## SafeStep(Spring/Flutter Project)
+-----------
+고령화 사회로 진입할수록 증가하는 치매 노인 실종 문제를 방지하기 위해 보호자가 치매환자의 위치를 실시간으로 조회할 수 있는 기능을 제공하는 어플
 
-A new Flutter project.
+## 개발환경
+------------------
+1. version : Java 17
 
-## Getting Started
+2. Ide : IntelliJ
 
-This project is a starting point for a Flutter application.
+3. BackEnd : JAVA
 
-A few resources to get you started if this is your first Flutter project:
+4. FrontEnd : Flutter
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 개발기간
+-------------------------------------
++ 2025.04.14 - 2025.05.13
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 주요 기능
+-----------------------
+1. 실시간 위치 조회 기능
+2. 안전 구역 설정 기능
+3. 이동 경로 조회 기능
+4. 안전 구역 이탈 시 FCM 을 이용한 푸시 알림 기능
