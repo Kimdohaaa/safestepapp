@@ -316,6 +316,7 @@ class LocationTrackingService {
 
         // [3] pno 가 유효한지 DB 에서 확인
         print(">>>>>>>>>>>>>>>>pno조회 시작");
+        print("$pno 확인확인확인");
         try{
           final response = await dio.get("http://Springweb-env.eba-a3mepmvc.ap-northeast-2.elasticbeanstalk.com/patient/find?pno=$pno");
           print("pno1 성공");
@@ -467,7 +468,7 @@ class LocationTrackingService {
       startOnBoot: true,
       debug: true,
       logLevel: bg.Config.LOG_LEVEL_VERBOSE,
-      heartbeatInterval: 30,
+      heartbeatInterval: 60,
     )).then((state) async { // 이미 start 가 실행중인지 여부 확인
       if (!state.enabled) {
         await bg.BackgroundGeolocation.start();
